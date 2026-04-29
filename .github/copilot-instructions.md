@@ -153,3 +153,11 @@ Core idea:
 2. Positions updating every 1–2s (fake realtime)
 3. Click on vehicle → basic detail panel
 4. Data served by MSW
+
+---
+
+## Memory Keys
+
+- "fleet-ops/stack"
+- "fleet-ops/decisiones"
+- "fleet-ops/convenciones"
