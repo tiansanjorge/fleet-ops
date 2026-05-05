@@ -5,6 +5,7 @@ import { useAlerts } from "../hooks/useAlerts";
 import { useAlertStore } from "../store/alertStore";
 import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
 import { Alert, AlertSeverity } from "../types";
+import { usePermission } from "@/core/permissions/usePermission";
 
 const SEVERITY_ROW: Record<AlertSeverity, string> = {
   low: "border-l-4 border-yellow-400 bg-yellow-50",
@@ -90,6 +91,7 @@ export default function AlertList({ onClose }: AlertListProps) {
   const { alerts } = useAlerts();
   const [tab, setTab] = useState<Tab>("active");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const { can } = usePermission();
 
   const unread = alerts.filter((a) => !a.read && !a.dismissed).length;
   const activeCount = alerts.filter((a) => !a.dismissed).length;
@@ -175,7 +177,7 @@ export default function AlertList({ onClose }: AlertListProps) {
             <AlertItem
               key={alert.id}
               alert={alert}
-              showDismiss={tab === "active"}
+              showDismiss={tab === "active" && can("dismiss:alert")}
             />
           ))
         )}

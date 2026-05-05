@@ -4,6 +4,8 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import AlertList from "@/features/alerts/components/AlertList";
 import { useAlertStore } from "@/features/alerts/store/alertStore";
+import { useAuthStore } from "@/core/auth/authStore";
+import { RoleSelector } from "@/core/auth/RoleSelector";
 
 const Map = dynamic(() => import("@/features/vehicles/components/Map"), {
   ssr: false,
@@ -14,6 +16,9 @@ export default function Home() {
   const unread = useAlertStore(
     (state) => state.alerts.filter((a) => !a.read && !a.dismissed).length,
   );
+  const currentUser = useAuthStore((state) => state.currentUser);
+
+  if (!currentUser) return <RoleSelector />;
 
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>

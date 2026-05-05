@@ -3,6 +3,7 @@
 import { useVehicleStore } from "../store/vehicleStore";
 import { useNeighborhood } from "../hooks/useNeighborhood";
 import type { Vehicle, VehicleStatus } from "../types";
+import { usePermission } from "@/core/permissions/usePermission";
 
 const STATUS_LABEL: Record<VehicleStatus, string> = {
   moving: "En movimiento",
@@ -37,6 +38,7 @@ function Panel({ vehicle, onClose }: Props) {
     vehicle.id,
     vehicle.position,
   );
+  const { can } = usePermission();
 
   return (
     <div className="absolute top-4 left-4 z-1000 w-72 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
@@ -70,6 +72,15 @@ function Panel({ vehicle, onClose }: Props) {
             <DetailRow label="Driver ID" value={vehicle.driverId} />
           )}
         </div>
+
+        {can("edit:vehicle") && (
+          <button
+            onClick={() => console.log("edit", vehicle.id)}
+            className="w-full text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 transition-colors rounded-lg py-2"
+          >
+            Edit vehicle
+          </button>
+        )}
       </div>
     </div>
   );
