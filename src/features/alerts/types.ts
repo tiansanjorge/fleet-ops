@@ -1,10 +1,11 @@
-export type AlertSeverity = 'low' | 'medium' | 'critical'
+export type AlertSeverity = "low" | "medium" | "critical";
 
 export interface Alert {
-  id: string
-  vehicleId: string
-  severity: AlertSeverity
-  message: string
-  timestamp: number
-  read: boolean
+  id: string;
+  vehicleId: string;
+  severity: AlertSeverity;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  dismissed: boolean;
 }

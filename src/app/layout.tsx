@@ -1,17 +1,16 @@
-import { MSWProvider } from './MSWProvider'
+import "./globals.css";
+import { MSWProvider } from "./MSWProvider";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body>
-        <MSWProvider>
-          {children}
-        </MSWProvider>
+        <MSWProvider>{children}</MSWProvider>
       </body>
     </html>
-  )
+  );
 }

@@ -1,86 +1,82 @@
-// "use client";
-
-// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-// import "leaflet/dist/leaflet.css";
-// import L from "leaflet";
-// import type { LatLngExpression } from "leaflet";
-// import type { MapContainerProps } from "react-leaflet";
-
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// delete (L.Icon.Default.prototype as any)._getIconUrl;
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl:
-//     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-//   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-//   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-// });
-
-// export default function Map() {
-//   const center: LatLngExpression = [-34.6, -58.4];
-
-//   const props: MapContainerProps = {
-//     center,
-//     zoom: 13,
-//     style: { height: "100vh", width: "100%" },
-//   };
-
-//   const vehicles = [
-//     { id: 1, position: [-34.6, -58.4], status: "moving" },
-//     { id: 2, position: [-34.61, -58.41], status: "idle" },
-//     { id: 3, position: [-34.62, -58.42], status: "stopped" },
-//   ];
-
-//   return (
-//     <MapContainer {...props}>
-//       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-//       {vehicles.map((v) => (
-//         <Marker key={v.id} position={v.position as [number, number]}>
-//           <Popup>
-//             Vehicle {v.id} - {v.status}
-//           </Popup>
-//         </Marker>
-//       ))}
-//     </MapContainer>
-//   );
-// }
-
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import type { LatLngExpression } from "leaflet";
 import { useVehicles } from "../hooks/useVehicles";
+import { useVehicleStore } from "../store/vehicleStore";
+import VehicleDetailPanel from "./VehicleDetailPanel";
+import type { VehicleStatus } from "../types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+const STATUS_COLOR: Record<VehicleStatus, string> = {
+  moving: "#22c55e", // green-500
+  idle: "#f59e0b", // amber-400
+  stopped: "#ef4444", // red-500
+};
 
-const center: LatLngExpression = [-34.6, -58.4];
+function createStatusIcon(status: VehicleStatus): L.DivIcon {
+  const color = STATUS_COLOR[status];
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+      <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
+        fill="${color}" stroke="white" stroke-width="2"/>
+      <circle cx="14" cy="14" r="5" fill="white"/>
+    </svg>
+  `;
+  return L.divIcon({
+    html: svg,
+    className: "",
+    iconSize: [28, 36],
+    iconAnchor: [14, 36],
+    popupAnchor: [0, -36],
+  });
+}
+
+const center: LatLngExpression = [-34.6, -58.45];
+function MapFocusController() {
+  const map = useMap();
+  const selectedId = useVehicleStore((state) => state.selectedVehicleId);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const vehicle = useVehicleStore
+      .getState()
+      .vehicles.find((v) => v.id === selectedId);
+    if (vehicle) {
+      map.flyTo(vehicle.position as LatLngExpression, 15, { duration: 0.8 });
+    }
+    // vehicles excluded intentionally — avoids re-flying on every position tick
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, map]);
+
+  return null;
+}
 
 export default function Map() {
   const { vehicles } = useVehicles();
+  const selectVehicle = useVehicleStore((state) => state.selectVehicle);
 
   return (
-    <MapContainer
-      center={center}
-      zoom={13}
-      style={{ height: "100vh", width: "100%" }}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {vehicles.map((v) => (
-        <Marker key={v.id} position={v.position}>
-          <Popup>
-            {v.label} — {v.status}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+      <MapContainer
+        center={center}
+        zoom={13}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapFocusController />
+        {vehicles.map((v) => (
+          <Marker
+            key={v.id}
+            position={v.position}
+            icon={createStatusIcon(v.status)}
+            eventHandlers={{ click: () => selectVehicle(v.id) }}
+          />
+        ))}
+      </MapContainer>
+      <VehicleDetailPanel />
+    </div>
   );
 }

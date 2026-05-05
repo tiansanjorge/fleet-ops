@@ -1,67 +1,84 @@
-import { Vehicle } from '@/features/vehicles/types'
-import { Alert } from '@/features/alerts/types'
-import { User } from '@/features/users/types'
+import { Vehicle } from "@/features/vehicles/types";
+import { Alert } from "@/features/alerts/types";
+import { User } from "@/features/users/types";
 
 export const db: {
-  vehicles: Vehicle[]
-  alerts: Alert[]
-  users: User[]
+  vehicles: Vehicle[];
+  alerts: Alert[];
+  users: User[];
 } = {
   vehicles: [
     {
-      id: 'v1',
-      label: 'Truck 01',
-      position: [-34.603, -58.381],
-      status: 'moving',
-      driverId: 'u2',
+      id: "v1",
+      label: "Truck 01",
+      position: [-34.615, -58.43], // Almagro
+      status: "moving",
+      driverId: "u2",
     },
     {
-      id: 'v2',
-      label: 'Truck 02',
-      position: [-34.615, -58.373],
-      status: 'idle',
-      driverId: 'u3',
+      id: "v2",
+      label: "Truck 02",
+      position: [-34.619, -58.447], // Caballito
+      status: "idle",
+      driverId: "u3",
     },
     {
-      id: 'v3',
-      label: 'Truck 03',
-      position: [-34.590, -58.395],
-      status: 'stopped',
+      id: "v3",
+      label: "Truck 03",
+      position: [-34.589, -58.426], // Palermo
+      status: "stopped",
+    },
+    {
+      id: "v4",
+      label: "Truck 04",
+      position: [-34.563, -58.455], // Belgrano
+      status: "moving",
+      driverId: "u4",
+    },
+    {
+      id: "v5",
+      label: "Truck 05",
+      position: [-34.572, -58.479], // Villa Urquiza
+      status: "moving",
+      driverId: "u5",
+    },
+    {
+      id: "v6",
+      label: "Truck 06",
+      position: [-34.599, -58.502], // Devoto
+      status: "idle",
+    },
+    {
+      id: "v7",
+      label: "Truck 07",
+      position: [-34.601, -58.441], // Villa Crespo
+      status: "moving",
+      driverId: "u6",
+    },
+    {
+      id: "v8",
+      label: "Truck 08",
+      position: [-34.631, -58.462], // Flores
+      status: "stopped",
+      driverId: "u2",
     },
   ],
-  alerts: [
-    {
-      id: 'a1',
-      vehicleId: 'v2',
-      severity: 'medium',
-      message: 'Vehicle idle for more than 10 minutes',
-      timestamp: Date.now(),
-      read: false,
-    },
-    {
-      id: 'a2',
-      vehicleId: 'v3',
-      severity: 'critical',
-      message: 'Vehicle stopped in restricted area',
-      timestamp: Date.now(),
-      read: false,
-    },
-  ],
+  alerts: [],
   users: [
     {
-      id: 'u1',
-      name: 'Admin User',
-      role: 'admin',
+      id: "u1",
+      name: "Admin User",
+      role: "admin",
     },
     {
-      id: 'u2',
-      name: 'Operator One',
-      role: 'operator',
+      id: "u2",
+      name: "Operator One",
+      role: "operator",
     },
     {
-      id: 'u3',
-      name: 'Viewer One',
-      role: 'viewer',
+      id: "u3",
+      name: "Viewer One",
+      role: "viewer",
     },
   ],
-}
+};
