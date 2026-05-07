@@ -1,0 +1,18 @@
+/* FleetOps Design Tokens — single source of truth */
+
+:root {
+  /* ── Vehicle status ── */
+  --color-status-moving: #22c55e; /* green-500 */
+  --color-status-idle: #f59e0b; /* amber-400 */
+  --color-status-stopped: #ef4444; /* red-500 */
+
+  /* ── Alert severity ── */
+  --color-severity-low: #eab308; /* yellow-500 */
+  --color-severity-medium: #f97316; /* orange-500 */
+  --color-severity-critical: #ef4444; /* red-500 */
+
+  /* ── Role colors ── */
+  --color-role-admin: #ef4444;
+  --color-role-operator: #378add;
+  --color-role-viewer: #888780;
+}
