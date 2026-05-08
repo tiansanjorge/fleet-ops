@@ -16,10 +16,11 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   stopped: "#ef4444", // red-500
 };
 
-function createStatusIcon(status: VehicleStatus): L.DivIcon {
+function createStatusIcon(status: VehicleStatus, selected = false): L.DivIcon {
   const color = STATUS_COLOR[status];
+  const [w, h] = selected ? [36, 46] : [28, 36];
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 28 36">
       <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
         fill="${color}" stroke="white" stroke-width="2"/>
       <circle cx="14" cy="14" r="5" fill="white"/>
@@ -28,9 +29,9 @@ function createStatusIcon(status: VehicleStatus): L.DivIcon {
   return L.divIcon({
     html: svg,
     className: "",
-    iconSize: [28, 36],
-    iconAnchor: [14, 36],
-    popupAnchor: [0, -36],
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h],
+    popupAnchor: [0, -h],
   });
 }
 
@@ -57,6 +58,7 @@ function MapFocusController() {
 export default function Map() {
   const { vehicles } = useVehicles();
   const selectVehicle = useVehicleStore((state) => state.selectVehicle);
+  const selectedId = useVehicleStore((state) => state.selectedVehicleId);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
@@ -65,13 +67,14 @@ export default function Map() {
         zoom={13}
         style={{ height: "100%", width: "100%" }}
       >
+        {" "}
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MapFocusController />
         {vehicles.map((v) => (
           <Marker
             key={v.id}
             position={v.position}
-            icon={createStatusIcon(v.status)}
+            icon={createStatusIcon(v.status, v.id === selectedId)}
             eventHandlers={{ click: () => selectVehicle(v.id) }}
           />
         ))}

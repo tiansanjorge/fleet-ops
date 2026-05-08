@@ -10,12 +10,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   default:
-    "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700",
+    "bg-surface text-zinc-800 hover:bg-zinc-200 dark:text-zinc-200 dark:hover:bg-zinc-700",
   primary:
-    "bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300",
-  danger: "bg-red-500/10 text-red-500 hover:bg-red-500/20",
-  ghost:
-    "bg-transparent text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+    "bg-foreground text-background hover:bg-zinc-700 dark:hover:bg-zinc-300",
+  danger:
+    "bg-red-500/10 text-red-500 hover:bg-red-500/20 dark:bg-red-500/15 dark:text-red-400 dark:hover:bg-red-500/25",
+  ghost: "bg-transparent text-muted hover:bg-zinc-100 dark:hover:bg-zinc-800",
 };
 
 export function Button({
@@ -26,7 +26,9 @@ export function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  const disabledStyles = disabled ? "opacity-40 cursor-not-allowed" : "";
+  const disabledStyles = disabled
+    ? "opacity-40 cursor-default pointer-events-none"
+    : "cursor-pointer";
 
   return (
     <button

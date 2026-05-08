@@ -1,105 +1,157 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
-import AlertList from "@/features/alerts/components/AlertList";
-import { useAlertStore } from "@/features/alerts/store/alertStore";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/core/auth/authStore";
-import { RoleSelector } from "@/core/auth/RoleSelector";
+import type { User } from "@/features/users/types";
 
-const Map = dynamic(() => import("@/features/vehicles/components/Map"), {
-  ssr: false,
-});
+const FAKE_USERS: User[] = [
+  { id: "u1", name: "Ana García", role: "admin" },
+  { id: "u2", name: "Carlos Méndez", role: "operator" },
+  { id: "u3", name: "Laura Ríos", role: "viewer" },
+];
 
-export default function Home() {
-  const [panelOpen, setPanelOpen] = useState(true);
-  const unread = useAlertStore(
-    (state) => state.alerts.filter((a) => !a.read && !a.dismissed).length,
-  );
-  const currentUser = useAuthStore((state) => state.currentUser);
+const roleConfig: Record<
+  string,
+  { label: string; dot: string; accent: string }
+> = {
+  admin: { label: "Admin", dot: "bg-red-500", accent: "text-red-400" },
+  operator: { label: "Operator", dot: "bg-blue-500", accent: "text-blue-400" },
+  viewer: { label: "Viewer", dot: "bg-zinc-400", accent: "text-zinc-400" },
+};
 
-  if (!currentUser) return <RoleSelector />;
+export default function LandingPage() {
+  const [open, setOpen] = useState(false);
+  const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
+
+  function handleLogin(user: User) {
+    setUser(user);
+    router.push("/dashboard");
+  }
 
   return (
-    <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
-      {/* Map always fills the full viewport */}
-      <Map />
+    <div className="relative h-screen w-full overflow-hidden">
+      {/* Hero background — responsive */}
+      <Image
+        src="/portada-md.png"
+        alt="FleetOps hero"
+        fill
+        priority
+        className="object-cover object-center block md:hidden"
+      />
+      <Image
+        src="/portada3.png"
+        alt="FleetOps hero"
+        fill
+        priority
+        className="object-cover object-center hidden md:block"
+      />
 
-      {/* Overlay panel — floats on top of the map, never affects its size */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          height: "100%",
-          width: "320px",
-          display: panelOpen ? "flex" : "none",
-          flexDirection: "column",
-          boxShadow: "-4px 0 16px rgba(0,0,0,0.15)",
-          zIndex: 1000,
-        }}
-      >
-        <AlertList onClose={() => setPanelOpen(false)} />
+      {/* Subtle bottom vignette */}
+      <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/60" />
+
+      {/* Top-left logo */}
+      <div className="absolute top-6 left-8 z-10">
+        <Image
+          src="/logo.png"
+          alt="FleetOps"
+          width={140}
+          height={42}
+          priority
+          className="object-contain"
+        />
       </div>
 
-      {/* Floating bell button — visible only when panel is closed */}
-      {!panelOpen && (
-        <button
-          onClick={() => setPanelOpen(true)}
-          aria-label="Open alerts panel"
-          style={{
-            position: "absolute",
-            bottom: "24px",
-            right: "24px",
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            background: "#1f2937",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-            zIndex: 1000,
-          }}
+      {/* Bottom — sign in trigger + role list */}
+      <div className="absolute bottom-10 inset-x-0 z-10 flex flex-col items-center gap-6">
+        {/* Role cards — appear when open */}
+        <div
+          className={`flex gap-3 flex-wrap justify-center transition-all duration-300 ${
+            open
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+          {FAKE_USERS.map((user) => {
+            const cfg = roleConfig[user.role];
+            return (
+              <button
+                key={user.id}
+                onClick={() => handleLogin(user)}
+                className="group relative overflow-hidden cursor-pointer flex items-center gap-3 rounded-lg bg-black/85 px-5 py-3 transition-all duration-300"
+              >
+                {/* gradient overlay */}
+                <span className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span
+                  className={`relative z-10 w-2 h-2 rounded-full shrink-0 ${cfg.dot}`}
+                />
+                <div className="relative z-10 text-left">
+                  <p
+                    className={`text-xs tracking-widest uppercase font-medium ${cfg.accent}`}
+                  >
+                    {cfg.label}
+                  </p>
+                  <p className="text-sm text-white">{user.name}</p>
+                </div>
+                <svg
+                  className="relative z-10 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 text-white/60"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Main CTA button */}
+        {open ? (
+          <button
+            onClick={() => setOpen(false)}
+            className="cursor-pointer flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/15 px-7 py-3 text-white/50 text-sm font-medium tracking-wide hover:text-white/80 transition-all duration-200"
           >
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-          {unread > 0 && (
-            <span
-              style={{
-                position: "absolute",
-                top: "6px",
-                right: "6px",
-                background: "#ef4444",
-                color: "white",
-                fontSize: "10px",
-                fontWeight: "bold",
-                borderRadius: "50%",
-                width: "16px",
-                height: "16px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                lineHeight: 1,
-              }}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
             >
-              {unread > 9 ? "9+" : unread}
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+            Cancel
+          </button>
+        ) : (
+          <button
+            onClick={() => setOpen(true)}
+            className="group relative overflow-hidden cursor-pointer flex items-center gap-2 rounded-full px-7 py-3 text-white text-sm font-medium tracking-wide transition-all duration-200"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-orange-500/50 to-blue-500/50 transition-opacity duration-200 group-hover:opacity-0" />
+            <span className="absolute inset-0 bg-gradient-to-r from-orange-500/75 to-blue-500/75 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+            <span className="relative z-10 flex items-center gap-2">
+              Sign in
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </span>
-          )}
-        </button>
-      )}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -56,8 +56,6 @@ Core idea:
         ui/                 # Generic reusable components (Badge, Button, Card, etc.)
         hooks/              # Generic reusable hooks
         utils/              # Generic helpers
-        styles/
-          tokens.css        # Design tokens — single source of truth
       mocks/
         db.ts               # In-memory database
         handlers.ts         # MSW handlers
@@ -107,7 +105,7 @@ Core idea:
   - `viewer` — read only
 - Permission logic lives in `core/permissions/`
 - Components never hardcode role checks, always use `can()`
-- Restricted actions must render as visually disabled with a tooltip — never hidden
+- Restricted actions must always render — never use conditional rendering to hide them based on permissions. When a user lacks permission, render the action with `disabled`, `opacity-40`, `cursor-default`, `pointer-events-none`, and a tooltip explaining why. This applies to every interactive element gated by can().
 
 ---
 
@@ -147,36 +145,57 @@ Core idea:
 - Clean, modern dashboard aesthetic
 - Dark and light mode — both must work at all times
 - Flat design: no gradients, no drop shadows, no glow effects
-- Spacing, color, and typography always come from tokens — never hardcoded
+- Semantic colors are mapped in each component using Tailwind classes — never use `style={{}}` or hardcoded hex values
 - Components are small and focused — one responsibility each
+- When creating any new component, never use style={{}}. If Tailwind doesn't have a utility for something, use arbitrary values like w-[320px] or top-[24px] instead.
 
-### Tokens (`src/shared/styles/tokens.css`)
+### Color pattern
 
-All colors, spacing, radius, and typography values are defined here as CSS custom properties and consumed via Tailwind or inline styles. Never hardcode hex values or spacing numbers outside of this file.
+Semantic color mapping lives inside each component as a `Record<variant, string>`. This is the established pattern — follow it consistently.
 
-**Status colors (vehicle domain):**
+Example from `Badge`:
 
-    --color-status-moving: #22c55e    /* green-500 */
-    --color-status-idle: #f59e0b      /* amber-400 */
-    --color-status-stopped: #ef4444   /* red-500 */
+    const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
+      moving:   { bg: 'bg-green-500/15',  text: 'text-green-400'  },
+      idle:     { bg: 'bg-amber-400/15',  text: 'text-amber-400'  },
+      stopped:  { bg: 'bg-red-500/15',    text: 'text-red-400'    },
+      low:      { bg: 'bg-yellow-500/15', text: 'text-yellow-400' },
+      medium:   { bg: 'bg-orange-500/15', text: 'text-orange-400' },
+      critical: { bg: 'bg-red-500/15',    text: 'text-red-400'    },
+    }
 
-**Severity colors (alert domain):**
+Reference colors by domain meaning:
 
-    --color-severity-low: #eab308     /* yellow-500 */
-    --color-severity-medium: #f97316  /* orange-500 */
-    --color-severity-critical: #ef4444 /* red-500 */
+- Vehicle status: `green` (moving) · `amber` (idle) · `red` (stopped)
+- Alert severity: `yellow` (low) · `orange` (medium) · `red` (critical)
+- Roles: `red` (admin) · `blue` (operator) · `zinc` (viewer)
 
-**Role colors (RBAC):**
+### Surfaces and borders
 
-    --color-role-admin: #ef4444
-    --color-role-operator: #378add
-    --color-role-viewer: #888780
+Surfaces and text use **semantic token utilities** defined in `globals.css` via `@theme inline`. **Always use the token utility — never replace it with a raw zinc class, even if you know the current mapped value.** This is what makes theme changes possible from a single file. When in doubt, reach for the token first.
 
-**Surfaces and text** use Tailwind's dark mode utilities (`dark:bg-*`, `dark:text-*`) rather than custom variables, to stay idiomatic with Tailwind v4.
+| Purpose                | Token utility       | Light value | Dark value |
+| ---------------------- | ------------------- | ----------- | ---------- |
+| Page background        | `bg-background`     | white       | zinc-950   |
+| Panel / sidebar        | `bg-surface`        | zinc-100    | zinc-900   |
+| Card                   | `bg-card`           | white       | zinc-900   |
+| Raised card / elevated | `bg-surface-raised` | white       | zinc-800   |
+| Border                 | `border-border`     | zinc-200    | zinc-800   |
+| Primary text           | `text-foreground`   | #171717     | zinc-50    |
+| Secondary / muted text | `text-muted`        | zinc-500    | zinc-400   |
 
-**Border style:** `border border-zinc-200 dark:border-zinc-800` — always 1px, always subtle.
+Opacity modifiers work with tokens: `bg-card/70`, `border-border/50`.
 
-**Border radius:** `rounded-md` (8px) for most elements, `rounded-lg` (12px) for cards and panels.
+**globals.css architecture — canonical Tailwind v4 pattern:**
+Raw CSS variables live in `:root` and `.dark`. Tailwind `@theme inline` references them via `var()`. Never put static values directly in `@theme inline` — that causes Tailwind to bake in the light-mode value at build time and tokens won't respond to dark mode.
+
+```
+:root { --foreground: #171717; }
+.dark { --foreground: #fafafa; }
+@theme inline { --color-foreground: var(--foreground); }  ← correct
+```
+
+**What NOT to migrate:** hover state backgrounds, domain-specific colors (severity, status, roles), and one-off interactive shades — these stay as explicit zinc classes.
 
 ### Typography
 
@@ -194,13 +213,12 @@ All colors, spacing, radius, and typography values are defined here as CSS custo
 
 ### Shared UI components (`src/shared/ui/`)
 
-These are the only building blocks used across features. Do not create one-off styled elements inside feature components.
+These are the only building blocks used across features. Do not create one-off styled elements inside feature components. Always check `shared/ui/` before creating anything new.
 
 **`Badge`** — displays vehicle status or alert severity.
 
 - Props: `variant: VehicleStatus | AlertSeverity`
-- Style: pill shape, dark background of the semantic color + light text of the same ramp
-- Example: `<Badge variant="critical" />`
+- Style: pill shape, translucent background + matching text color
 
 **`StatusDot`** — small colored circle, used in logs and compact lists.
 
@@ -209,12 +227,12 @@ These are the only building blocks used across features. Do not create one-off s
 **`Button`** — all interactive actions.
 
 - Props: `variant: 'default' | 'primary' | 'danger' | 'ghost'`, `disabled`, `tooltip`
-- When `disabled` due to permissions, render visually muted with a tooltip explaining why
+- When `disabled` due to permissions, render with `opacity-40 cursor-default pointer-events-none` + tooltip explaining why
 
 **`Card`** — generic surface wrapper.
 
 - Props: `children`, optional `className`
-- Style: white/zinc-900 background, 1px border, `rounded-lg`, `p-4`
+- Style: `bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4`
 
 **`PanelHeader`** — top bar for side panels (alerts, vehicle detail).
 
@@ -224,21 +242,22 @@ These are the only building blocks used across features. Do not create one-off s
 **`EmptyState`** — shown when a list has no items.
 
 - Props: `message`
-- Style: centered, muted text, no icon required
+- Style: centered, muted text
 
 ### Patterns
 
 - Loading states: use skeleton placeholders (`animate-pulse`), not spinners
 - Empty states: always render `<EmptyState />`, never null or blank space
-- Disabled actions: render the element with `opacity-40 cursor-not-allowed` + tooltip — do not hide it
+- Disabled actions: render with `opacity-40`, `cursor-default` and `pointer-events-none` + tooltip — never hidden
 - Transitions: `transition-colors duration-150` on interactive elements, nothing more
 - Panel open/close: `transition-transform duration-200` sliding from the right
 
 ### Dark / Light mode
 
 - Use Tailwind's `dark:` variant on every element that needs a different appearance
-- Test mentally: if the background were near-black, would every text and icon still be readable?
-- Never use `text-gray-*` alone — always pair with `dark:text-*` counterpart
+- Every color class must have its `dark:` counterpart — no exceptions
+- Never use `text-gray-*` — use `text-zinc-*` with its `dark:` pair
+- Mental check before finishing a component: would every element be readable on a near-black background?
 
 ---
 
@@ -250,7 +269,9 @@ These are the only building blocks used across features. Do not create one-off s
 - Feature code stays inside its feature folder
 - Shared code only goes to `shared/` or `core/` if used by 2+ features
 - Build incrementally — MVP first, no overengineering
-- When adding a new UI element, check `shared/ui/` first before creating something new
+- Never use `style={{}}` — all styles via Tailwind classes
+- **Always prefer semantic token utilities over raw Tailwind classes.** Before writing any color class (`text-zinc-*`, `bg-zinc-*`, `border-zinc-*`, etc.), check if a token utility covers it (`text-foreground`, `text-muted`, `bg-surface`, `bg-card`, `bg-surface-raised`, `border-border`). Raw zinc classes are only allowed for hover states, domain-specific colors (severity, status, roles), and one-off interactive shades not covered by any token.
+- All interactive elements (buttons, links, clickable divs) must have `cursor-pointer`. Disabled elements use `opacity-40`, `cursor-default` and `pointer-events-none` — never `cursor-not-allowed`.
 
 ---
 

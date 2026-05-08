@@ -1,35 +1,51 @@
 @import "tailwindcss";
-@import "../shared/styles/tokens.css";
 
 /* ── Dark mode via class (manual toggle) ── */
 @variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  /* Superficies */
-  --color-background: #ffffff;
-  --color-foreground: #171717;
-  --color-surface: #f4f4f5; /* zinc-100 — panels, sidebars */
-  --color-surface-raised: #ffffff; /* cards sobre surface */
-  --color-border: #e4e4e7; /* zinc-200 */
-  --color-muted: #71717a; /* zinc-500 — texto secundario */
-
-  /* Tipografía */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Raw theme variables (light defaults) ── */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --surface: #f4f4f5; /* zinc-100 */
+  --card: #ffffff;
+  --surface-raised: #ffffff;
+  --border: #e4e4e7; /* zinc-200 */
+  --muted: #52525b; /* zinc-600 */
 }
 
 /* ── Dark mode overrides ── */
 .dark {
-  --color-background: #09090b; /* zinc-950 */
-  --color-foreground: #fafafa; /* zinc-50 */
-  --color-surface: #18181b; /* zinc-900 */
-  --color-surface-raised: #27272a; /* zinc-800 */
-  --color-border: #3f3f46; /* zinc-700 */
-  --color-muted: #a1a1aa; /* zinc-400 */
+  --background: #09090b; /* zinc-950 */
+  --foreground: #fafafa; /* zinc-50  */
+  --surface: #18181b; /* zinc-900 */
+  --card: #18181b; /* zinc-900 */
+  --surface-raised: #27272a; /* zinc-800 */
+  --border: #27272a; /* zinc-800 */
+  --muted: #d4d4d8; /* zinc-300 */
+}
+
+/* ── Tailwind utilities (reference the raw vars — never inline static values) ── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), Arial, sans-serif;
+}
+
+/* Leaflet marker container clips drop-shadow filters by default */
+.leaflet-marker-icon {
+  overflow: visible !important;
 }

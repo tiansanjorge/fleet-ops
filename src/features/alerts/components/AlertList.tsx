@@ -1,94 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useAlerts } from "../hooks/useAlerts";
 import { useAlertStore } from "../store/alertStore";
-import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
-import { Alert, AlertSeverity } from "../types";
+import type { AlertSeverity } from "../types";
 import { usePermission } from "@/core/permissions/usePermission";
-
-const SEVERITY_ROW: Record<AlertSeverity, string> = {
-  low: "border-l-4 border-yellow-400 bg-yellow-50",
-  medium: "border-l-4 border-orange-400 bg-orange-50",
-  critical: "border-l-4 border-red-500 bg-red-50",
-};
-
-const SEVERITY_BADGE: Record<AlertSeverity, string> = {
-  low: "bg-yellow-100 text-yellow-700",
-  medium: "bg-orange-100 text-orange-700",
-  critical: "bg-red-100 text-red-700",
-};
+import { PanelHeader } from "@/shared/ui/PanelHeader";
+import { EmptyState } from "@/shared/ui/EmptyState";
+import { AlertItem } from "./AlertItem";
 
 type Tab = "active" | "history";
 type SeverityFilter = AlertSeverity | "all";
 
-function AlertItem({
-  alert,
-  showDismiss,
-}: {
-  alert: Alert;
-  showDismiss: boolean;
-}) {
-  const markAsRead = useAlertStore((state) => state.markAsRead);
-  const dismissAlert = useAlertStore((state) => state.dismissAlert);
-  const selectVehicle = useVehicleStore((state) => state.selectVehicle);
-
-  const dimmed = alert.read || alert.dismissed;
-
-  return (
-    <div
-      className={`p-3 rounded ${SEVERITY_ROW[alert.severity]} ${dimmed ? "opacity-50" : ""}`}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span
-          className={`text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${SEVERITY_BADGE[alert.severity]}`}
-        >
-          {alert.severity}
-        </span>
-        <span className="text-xs text-gray-400">
-          {new Date(alert.timestamp).toLocaleTimeString()}
-        </span>
-      </div>
-
-      <p className="text-sm text-gray-700 mt-1 leading-snug">{alert.message}</p>
-
-      <button
-        onClick={() => selectVehicle(alert.vehicleId)}
-        className="text-xs text-blue-500 hover:underline mt-0.5 cursor-pointer block"
-      >
-        Vehicle: {alert.vehicleId}
-      </button>
-
-      {!alert.dismissed && (
-        <div className="flex gap-3 mt-1">
-          {!alert.read && (
-            <button
-              onClick={() => markAsRead(alert.id)}
-              className="text-xs text-gray-500 hover:text-gray-700 cursor-pointer"
-            >
-              Mark as read
-            </button>
-          )}
-          {showDismiss && (
-            <button
-              onClick={() => dismissAlert(alert.id)}
-              className="text-xs text-red-400 hover:text-red-600 cursor-pointer"
-            >
-              Dismiss
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+const SEVERITY_FILTERS: SeverityFilter[] = ["all", "low", "medium", "critical"];
 
 interface AlertListProps {
   onClose: () => void;
 }
 
 export default function AlertList({ onClose }: AlertListProps) {
-  const { alerts } = useAlerts();
+  const alerts = useAlertStore((state) => state.alerts);
   const [tab, setTab] = useState<Tab>("active");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
   const { can } = usePermission();
@@ -103,84 +33,79 @@ export default function AlertList({ onClose }: AlertListProps) {
     );
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md max-h-[calc(100vh-6.5rem)]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-2">
-              Alerts
-              {unread > 0 && (
-                <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                  {unread}
-                </span>
-              )}
-            </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {unread} unread · {activeCount} active · {alerts.length} total
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none cursor-pointer"
-            aria-label="Close panel"
-          >
-            ×
-          </button>
-        </div>
+      <div className="shrink-0 px-4 pt-4 pb-3">
+        <PanelHeader
+          title="Alerts"
+          subtitle={`${unread} unread · ${activeCount} active · ${alerts.length} total`}
+          onClose={onClose}
+        />
 
         {/* Tabs */}
-        <div className="flex gap-1 mt-3">
+        <div className="mt-3 flex gap-1">
           {(["active", "history"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`text-xs px-3 py-1 rounded-full font-medium cursor-pointer transition-colors ${
+              className={`relative cursor-pointer overflow-hidden rounded-full px-3 py-1 text-xs font-medium transition-colors duration-150 ${
                 tab === t
-                  ? "bg-gray-800 text-white"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  ? "text-orange-700 dark:text-zinc-100"
+                  : "text-muted hover:text-zinc-800 dark:hover:text-zinc-50"
               }`}
             >
-              {t === "active" ? "Active" : "History"}
+              {tab === t && (
+                <span className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-blue-500/20 dark:from-orange-500/30 dark:to-blue-500/30" />
+              )}
+              <span className="relative z-10">
+                {t === "active" ? "Active" : "History"}
+              </span>
             </button>
           ))}
         </div>
 
         {/* Severity filter */}
-        <div className="flex gap-1 mt-2 flex-wrap">
-          {(["all", "low", "medium", "critical"] as SeverityFilter[]).map(
-            (s) => (
-              <button
-                key={s}
-                onClick={() => setSeverityFilter(s)}
-                className={`text-xs px-2 py-0.5 rounded-full cursor-pointer transition-colors capitalize ${
-                  severityFilter === s
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                }`}
-              >
-                {s}
-              </button>
-            ),
-          )}
+        <div className="mt-2 flex flex-wrap gap-1">
+          {SEVERITY_FILTERS.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSeverityFilter(s)}
+              className={`relative cursor-pointer overflow-hidden rounded-full px-2 py-0.5 text-xs capitalize transition-colors duration-150 ${
+                severityFilter === s
+                  ? "text-orange-700 dark:text-zinc-100"
+                  : "text-muted hover:text-zinc-800 dark:hover:text-zinc-50"
+              }`}
+            >
+              {severityFilter === s && (
+                <span className="absolute inset-0 bg-gradient-to-r from-orange-500/15 to-blue-500/15 dark:from-orange-500/25 dark:to-blue-500/25" />
+              )}
+              <span className="relative z-10">{s}</span>
+            </button>
+          ))}
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
-        {filtered.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center mt-10">
-            {tab === "active" ? "No active alerts" : "No alerts in history"}
-          </p>
-        ) : (
-          filtered.map((alert) => (
-            <AlertItem
-              key={alert.id}
-              alert={alert}
-              showDismiss={tab === "active" && can("dismiss:alert")}
+      <div className="relative flex-1 min-h-0">
+        {/* Fade mask bottom */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 z-10 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent rounded-b-lg" />
+        <div className="h-full overflow-y-auto space-y-2 px-3 pt-3 pb-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600">
+          {filtered.length === 0 ? (
+            <EmptyState
+              message={
+                tab === "active" ? "No active alerts" : "No alerts in history"
+              }
             />
-          ))
-        )}
+          ) : (
+            filtered.map((alert) => (
+              <AlertItem
+                key={alert.id}
+                alert={alert}
+                showDismiss={tab === "active" && can("dismiss:alert")}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

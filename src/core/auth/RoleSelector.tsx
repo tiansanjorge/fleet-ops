@@ -14,7 +14,11 @@ export function RoleSelector() {
     <div>
       <p>Select a role to continue:</p>
       {FAKE_USERS.map((user) => (
-        <button key={user.id} onClick={() => setUser(user)}>
+        <button
+          key={user.id}
+          onClick={() => setUser(user)}
+          className="cursor-pointer"
+        >
           {user.name}
         </button>
       ))}

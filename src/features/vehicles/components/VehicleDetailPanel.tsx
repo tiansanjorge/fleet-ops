@@ -2,28 +2,21 @@
 
 import { useVehicleStore } from "../store/vehicleStore";
 import { useNeighborhood } from "../hooks/useNeighborhood";
-import type { Vehicle, VehicleStatus } from "../types";
+import type { Vehicle } from "../types";
 import { usePermission } from "@/core/permissions/usePermission";
-
-const STATUS_LABEL: Record<VehicleStatus, string> = {
-  moving: "En movimiento",
-  idle: "Inactivo",
-  stopped: "Detenido",
-};
-
-const STATUS_COLOR: Record<VehicleStatus, string> = {
-  moving: "bg-green-100 text-green-800",
-  idle: "bg-yellow-100 text-yellow-800",
-  stopped: "bg-red-100 text-red-800",
-};
+import { Badge } from "@/shared/ui/Badge";
+import { Button } from "@/shared/ui/Button";
+import { PanelHeader } from "@/shared/ui/PanelHeader";
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-gray-500 uppercase tracking-wide">
+      <span className="text-xs text-muted uppercase tracking-wide">
         {label}
       </span>
-      <span className="text-sm text-gray-900 font-medium">{value}</span>
+      <span className="text-sm font-medium text-foreground font-mono">
+        {value}
+      </span>
     </div>
   );
 }
@@ -39,28 +32,16 @@ function Panel({ vehicle, onClose }: Props) {
     vehicle.position,
   );
   const { can } = usePermission();
+  const canEdit = can("edit:vehicle");
 
   return (
-    <div className="absolute top-4 left-4 z-1000 w-72 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
-        <h2 className="font-semibold text-gray-900">{vehicle.label}</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-700 transition-colors text-lg leading-none"
-          aria-label="Cerrar panel"
-        >
-          ×
-        </button>
+    <div className="absolute top-4 left-4 z-1000 w-72 overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md">
+      <div className="px-4 py-3">
+        <PanelHeader title={vehicle.label} onClose={onClose} />
       </div>
 
-      <div className="px-4 py-4 flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLOR[vehicle.status]}`}
-          >
-            {STATUS_LABEL[vehicle.status]}
-          </span>
-        </div>
+      <div className="px-4 pb-4 flex flex-col gap-4">
+        <Badge variant={vehicle.status} />
 
         <div className="flex flex-col gap-3">
           <DetailRow label="ID" value={vehicle.id} />
@@ -73,14 +54,17 @@ function Panel({ vehicle, onClose }: Props) {
           )}
         </div>
 
-        {can("edit:vehicle") && (
-          <button
-            onClick={() => console.log("edit", vehicle.id)}
-            className="w-full text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 transition-colors rounded-lg py-2"
-          >
-            Edit vehicle
-          </button>
-        )}
+        <Button
+          variant="primary"
+          disabled={!canEdit}
+          tooltip={
+            !canEdit ? "No tenés permisos para editar vehículos" : undefined
+          }
+          className="w-full justify-center"
+          onClick={() => console.log("edit", vehicle.id)}
+        >
+          Edit vehicle
+        </Button>
       </div>
     </div>
   );
