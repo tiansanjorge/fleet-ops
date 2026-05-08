@@ -36,7 +36,7 @@ export default function Dashboard() {
 
       {/* Overlay panel — floats on top of the map, never affects its size */}
       {panelOpen && (
-        <div className="absolute top-4 right-4 z-1000 w-80 max-h-[calc(100vh-2rem)] flex flex-col">
+        <div className="absolute top-4 right-4 z-1000 w-80 h-[calc(100vh-2rem)] flex flex-col">
           <AlertList onClose={() => setPanelOpen(false)} />
         </div>
       )}
@@ -46,7 +46,7 @@ export default function Dashboard() {
         <button
           onClick={() => setPanelOpen(true)}
           aria-label="Open alerts panel"
-          className="absolute bottom-6 right-6 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-1000 bg-foreground hover:bg-zinc-700 dark:hover:bg-zinc-600 text-background transition-colors duration-150"
+          className="absolute bottom-6 right-6 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-1000 bg-card/70 backdrop-blur-md text-foreground hover:bg-card/90 transition-colors duration-150"
         >
           <svg
             width="20"
@@ -60,7 +60,7 @@ export default function Dashboard() {
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
           {unread > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full flex items-center justify-center bg-red-500 text-white text-[10px] font-medium leading-none">
+            <span className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center bg-red-500 text-white text-[10px] font-medium leading-none">
               {unread > 9 ? "9+" : unread}
             </span>
           )}

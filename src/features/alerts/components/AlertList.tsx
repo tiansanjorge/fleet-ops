@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useAlertStore } from "../store/alertStore";
 import type { AlertSeverity } from "../types";
 import { usePermission } from "@/core/permissions/usePermission";
@@ -31,6 +31,21 @@ export default function AlertList({ onClose }: AlertListProps) {
     .filter((a) =>
       severityFilter === "all" ? true : a.severity === severityFilter,
     );
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showTopGrad, setShowTopGrad] = useState(false);
+  const [showBottomGrad, setShowBottomGrad] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowTopGrad(el.scrollTop > 0);
+    setShowBottomGrad(el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+  }, [filtered.length, tab, severityFilter, checkScroll]);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-lg bg-card/70 backdrop-blur-md max-h-[calc(100vh-6.5rem)]">
@@ -87,9 +102,7 @@ export default function AlertList({ onClose }: AlertListProps) {
 
       {/* List */}
       <div className="relative flex-1 min-h-0">
-        {/* Fade mask bottom */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 z-10 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent rounded-b-lg" />
-        <div className="h-full overflow-y-auto space-y-2 px-3 pt-3 pb-6 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600">
+        <div className="flex h-full flex-col px-3 pt-3 pb-6">
           {filtered.length === 0 ? (
             <EmptyState
               message={
@@ -97,13 +110,27 @@ export default function AlertList({ onClose }: AlertListProps) {
               }
             />
           ) : (
-            filtered.map((alert) => (
-              <AlertItem
-                key={alert.id}
-                alert={alert}
-                showDismiss={tab === "active" && can("dismiss:alert")}
-              />
-            ))
+            <div className="relative flex-1 min-h-0">
+              {showTopGrad && (
+                <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 bg-gradient-to-b from-zinc-100/70 to-zinc-100/0 dark:from-zinc-700/50 dark:to-zinc-700/0" />
+              )}
+              {showBottomGrad && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-6 bg-gradient-to-t from-zinc-100/70 to-zinc-100/0 dark:from-zinc-700/50 dark:to-zinc-700/0" />
+              )}
+              <div
+                ref={scrollRef}
+                onScroll={checkScroll}
+                className="h-full overflow-y-auto space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-thumb:hover]:bg-zinc-500 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-400"
+              >
+                {filtered.map((alert) => (
+                  <AlertItem
+                    key={alert.id}
+                    alert={alert}
+                    showDismiss={tab === "active" && can("dismiss:alert")}
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>

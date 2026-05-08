@@ -83,6 +83,7 @@ interface AlertStore {
   alerts: Alert[];
   setAlerts: (alerts: Alert[]) => void;
   markAsRead: (id: string) => void;
+  markAsUnread: (id: string) => void;
   dismissAlert: (id: string) => void;
   maybeGenerateAlert: (vehicles: Vehicle[]) => void;
   fireDemoAlert: (vehicles: Vehicle[]) => void;
@@ -96,6 +97,13 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
   markAsRead: (id) =>
     set((state) => ({
       alerts: state.alerts.map((a) => (a.id === id ? { ...a, read: true } : a)),
+    })),
+
+  markAsUnread: (id) =>
+    set((state) => ({
+      alerts: state.alerts.map((a) =>
+        a.id === id ? { ...a, read: false } : a,
+      ),
     })),
 
   dismissAlert: (id) =>
