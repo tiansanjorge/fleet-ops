@@ -33,7 +33,7 @@ export default function AlertList({ onClose }: AlertListProps) {
     );
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md max-h-[calc(100vh-6.5rem)]">
+    <div className="flex flex-col overflow-hidden rounded-lg bg-card/70 backdrop-blur-md max-h-[calc(100vh-6.5rem)]">
       {/* Header */}
       <div className="shrink-0 px-4 pt-4 pb-3">
         <PanelHeader

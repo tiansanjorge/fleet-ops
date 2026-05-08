@@ -105,7 +105,7 @@ Core idea:
   - `viewer` — read only
 - Permission logic lives in `core/permissions/`
 - Components never hardcode role checks, always use `can()`
-- Restricted actions must always render — never use conditional rendering to hide them based on permissions. When a user lacks permission, render the action with `disabled`, `opacity-40`, `cursor-default`, `pointer-events-none`, and a tooltip explaining why. This applies to every interactive element gated by can().
+- Restricted actions are conditionally rendered based on permissions — if the user lacks the required permission, the element must not appear in the DOM at all. Use `can()` as a guard: `{can('action:resource') && <Button ...>}`. Never render disabled or visually degraded versions of permission-gated elements.
 
 ---
 

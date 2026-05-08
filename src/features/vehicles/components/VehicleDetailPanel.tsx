@@ -54,17 +54,15 @@ function Panel({ vehicle, onClose }: Props) {
           )}
         </div>
 
-        <Button
-          variant="primary"
-          disabled={!canEdit}
-          tooltip={
-            !canEdit ? "No tenés permisos para editar vehículos" : undefined
-          }
-          className="w-full justify-center"
-          onClick={() => console.log("edit", vehicle.id)}
-        >
-          Edit vehicle
-        </Button>
+        {canEdit && (
+          <Button
+            variant="primary"
+            className="w-full justify-center"
+            onClick={() => console.log("edit", vehicle.id)}
+          >
+            Edit vehicle
+          </Button>
+        )}
       </div>
     </div>
   );
