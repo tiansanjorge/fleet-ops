@@ -4,13 +4,22 @@ import type { Permission } from "./types";
 export const PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [
     "view:vehicles",
+    "create:vehicle",
     "edit:vehicle",
+    "delete:vehicle",
     "view:alerts",
     "dismiss:alert",
     "manage:users",
     "view:logs",
   ],
-  operator: ["view:vehicles", "edit:vehicle", "view:alerts", "dismiss:alert"],
+  operator: [
+    "view:vehicles",
+    "create:vehicle",
+    "edit:vehicle",
+    "delete:vehicle",
+    "view:alerts",
+    "dismiss:alert",
+  ],
   viewer: ["view:vehicles", "view:alerts"],
 };
 

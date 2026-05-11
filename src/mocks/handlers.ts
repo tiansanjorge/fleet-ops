@@ -1,16 +1,47 @@
-import { http, HttpResponse } from 'msw'
-import { db } from './db'
+import { http, HttpResponse } from "msw";
+import { db } from "./db";
+import type { Vehicle } from "@/features/vehicles/types";
+
+function generateId(): string {
+  return `v${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
 
 export const handlers = [
-  http.get('/vehicles', () => {
-    return HttpResponse.json(db.vehicles)
+  http.get("/vehicles", () => {
+    return HttpResponse.json(db.vehicles);
   }),
 
-  http.get('/alerts', () => {
-    return HttpResponse.json(db.alerts)
+  http.post("/vehicles", async ({ request }) => {
+    const body = (await request.json()) as Omit<Vehicle, "id">;
+    const vehicle: Vehicle = { ...body, id: generateId() };
+    db.vehicles.push(vehicle);
+    return HttpResponse.json(vehicle, { status: 201 });
   }),
 
-  http.get('/users', () => {
-    return HttpResponse.json(db.users)
+  http.put("/vehicles/:id", async ({ params, request }) => {
+    const { id } = params as { id: string };
+    const body = (await request.json()) as Partial<Vehicle>;
+    const index = db.vehicles.findIndex((v) => v.id === id);
+    if (index === -1)
+      return HttpResponse.json({ error: "Not found" }, { status: 404 });
+    db.vehicles[index] = { ...db.vehicles[index], ...body };
+    return HttpResponse.json(db.vehicles[index]);
   }),
-]
+
+  http.delete("/vehicles/:id", ({ params }) => {
+    const { id } = params as { id: string };
+    const index = db.vehicles.findIndex((v) => v.id === id);
+    if (index === -1)
+      return HttpResponse.json({ error: "Not found" }, { status: 404 });
+    db.vehicles.splice(index, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get("/alerts", () => {
+    return HttpResponse.json(db.alerts);
+  }),
+
+  http.get("/users", () => {
+    return HttpResponse.json(db.users);
+  }),
+];

@@ -13,14 +13,12 @@ export const db: {
       label: "Truck 01",
       position: [-34.615, -58.43], // Almagro
       status: "moving",
-      driverId: "u2",
     },
     {
       id: "v2",
       label: "Truck 02",
       position: [-34.619, -58.447], // Caballito
       status: "idle",
-      driverId: "u3",
     },
     {
       id: "v3",
@@ -33,14 +31,12 @@ export const db: {
       label: "Truck 04",
       position: [-34.563, -58.455], // Belgrano
       status: "moving",
-      driverId: "u4",
     },
     {
       id: "v5",
       label: "Truck 05",
       position: [-34.572, -58.479], // Villa Urquiza
       status: "moving",
-      driverId: "u5",
     },
     {
       id: "v6",
@@ -53,14 +49,12 @@ export const db: {
       label: "Truck 07",
       position: [-34.601, -58.441], // Villa Crespo
       status: "moving",
-      driverId: "u6",
     },
     {
       id: "v8",
       label: "Truck 08",
       position: [-34.631, -58.462], // Flores
       status: "stopped",
-      driverId: "u2",
     },
   ],
   alerts: [],
