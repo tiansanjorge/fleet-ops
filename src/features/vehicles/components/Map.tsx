@@ -127,7 +127,7 @@ export default function Map() {
   const [addOpen, setAddOpen] = useState(false);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <MapContainer
         center={center}
         zoom={13}
@@ -146,7 +146,7 @@ export default function Map() {
         <button
           onClick={() => setAddOpen(true)}
           aria-label="Add vehicle"
-          className="absolute bottom-24 left-6 z-1000 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-md border border-border/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-card/95 transition-colors duration-150 cursor-pointer"
+          className="absolute bottom-6 left-6 z-1000 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-md border border-border/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-card/95 transition-colors duration-150 cursor-pointer"
         >
           <svg
             width="14"
