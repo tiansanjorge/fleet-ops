@@ -25,7 +25,6 @@ function getInitials(name: string): string {
 
 export function Header() {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const clearUser = useAuthStore((state) => state.clearUser);
   const { can } = usePermission();
   const panelOpen = useUserStore((state) => state.panelOpen);
   const setPanelOpen = useUserStore((state) => state.setPanelOpen);
@@ -53,7 +52,6 @@ export function Header() {
 
   function handleSignOut() {
     setAvatarMenuOpen(false);
-    clearUser();
     window.location.href = "/";
   }
 

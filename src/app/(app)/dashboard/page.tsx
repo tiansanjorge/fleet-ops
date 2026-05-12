@@ -34,9 +34,9 @@ export default function Dashboard() {
       {/* Map always fills the full viewport */}
       <Map />
 
-      {/* Overlay panel — floats on top of the map, never affects its size */}
+      {/* Overlay panel — full-screen on mobile, floating panel on desktop */}
       {panelOpen && (
-        <div className="absolute top-4 right-4 z-1000 w-80 h-[calc(100vh-2rem)] flex flex-col">
+        <div className="absolute inset-4 md:inset-auto md:top-4 md:right-4 z-1000 md:w-80 md:h-[calc(100vh-2rem)] flex flex-col">
           <AlertList onClose={() => setPanelOpen(false)} />
         </div>
       )}

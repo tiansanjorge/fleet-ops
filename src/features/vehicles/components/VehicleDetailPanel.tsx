@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import React from "react";
 import { useVehicleStore } from "../store/vehicleStore";
 import { useVehicleMutations } from "../hooks/useVehicleMutations";
 import { useNeighborhood } from "../hooks/useNeighborhood";
@@ -11,7 +12,13 @@ import { Button } from "@/shared/ui/Button";
 import { PanelHeader } from "@/shared/ui/PanelHeader";
 import { VehicleFormModal } from "./VehicleFormModal";
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function DetailRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-0.5">
       <span className="text-xs text-muted uppercase tracking-wide">
@@ -56,7 +63,7 @@ function Panel({ vehicle, onClose }: Props) {
 
   return (
     <>
-      <div className="absolute top-4 left-4 z-1000 w-72 overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md">
+      <div className="absolute top-4 left-4 z-1000 w-[calc(100vw-2rem)] md:w-72 overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md">
         <div className="px-4 py-3">
           <PanelHeader title={vehicle.label} onClose={onClose} />
         </div>
@@ -69,7 +76,11 @@ function Panel({ vehicle, onClose }: Props) {
             <DetailRow
               label="Barrio"
               value={
-                loading ? "Calculando…" : (neighborhood ?? "No disponible")
+                loading ? (
+                  <span className="inline-block w-28 h-4 rounded bg-surface-raised animate-pulse" />
+                ) : (
+                  (neighborhood ?? "No disponible")
+                )
               }
             />
           </div>

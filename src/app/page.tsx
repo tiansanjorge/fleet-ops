@@ -40,6 +40,7 @@ export default function LandingPage() {
         fill
         priority
         sizes="(max-width: 767px) 100vw, 0px"
+        className="object-cover object-center md:hidden"
       />
       <Image
         src="/portada3.webp"
@@ -69,7 +70,7 @@ export default function LandingPage() {
       <div className="absolute bottom-10 inset-x-0 z-10 flex flex-col items-center gap-6">
         {/* Role cards — appear when open */}
         <div
-          className={`flex gap-3 flex-wrap justify-center transition-all duration-300 ${
+          className={`flex flex-col md:flex-row gap-3 items-center transition-all duration-300 ${
             open
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4 pointer-events-none"
@@ -81,7 +82,7 @@ export default function LandingPage() {
               <button
                 key={user.id}
                 onClick={() => handleLogin(user)}
-                className="group relative overflow-hidden cursor-pointer flex items-center gap-3 rounded-lg bg-black/85 px-5 py-3 transition-all duration-300"
+                className="group relative overflow-hidden cursor-pointer flex items-center gap-3 rounded-lg bg-black/85 px-5 py-3 w-[190px] transition-all duration-300"
               >
                 {/* gradient overlay */}
                 <span className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
