@@ -57,7 +57,20 @@ export function Header() {
 
   return (
     <>
-      <header className="relative h-14 shrink-0 flex items-center justify-between px-6 bg-background/70 backdrop-blur-md border-b border-border/50">
+      <header className="relative h-14 shrink-0 flex items-center justify-between px-6 border-b border-border/50 overflow-hidden">
+        {/* Background image */}
+        <Image
+          src="/header-lg.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden="true"
+        />
+        {/* Overlay for contrast */}
+        <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
+
         {/* Logo */}
         <Image
           src="/logo.webp"
@@ -65,11 +78,11 @@ export function Header() {
           width={120}
           height={36}
           priority
-          className="object-contain"
+          className="relative z-10 object-contain"
         />
 
         {/* Right side: theme toggle + users button + user info */}
-        <div className="flex items-center gap-3">
+        <div className="relative z-10 flex items-center gap-3">
           <ThemeToggle />
 
           {can("manage:users") && (
