@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import type { LatLngExpression } from "leaflet";
 import { useVehicles } from "../hooks/useVehicles";
 import { useVehicleStore } from "../store/vehicleStore";
+import { useShallow } from "zustand/react/shallow";
 import { FLEETOPS_HQ } from "../hooks/useVehicleMutations";
 import VehicleDetailPanel from "./VehicleDetailPanel";
 import { VehicleFormModal } from "./VehicleFormModal";
@@ -18,6 +19,9 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   idle: "#f59e0b", // amber-400
   stopped: "#ef4444", // red-500
 };
+
+// Created once — never changes
+const hqIcon = createHQIcon();
 
 function createHQIcon(): L.DivIcon {
   const svg = `
@@ -58,6 +62,39 @@ function createStatusIcon(status: VehicleStatus, selected = false): L.DivIcon {
 }
 
 const center: LatLngExpression = [-34.6, -58.45];
+
+interface VehicleMarkerProps {
+  id: string;
+  onSelect: (id: string) => void;
+}
+
+// Each marker subscribes only to its own vehicle slice.
+// The parent Map never re-renders on position ticks — only on id list changes.
+const VehicleMarker = memo(function VehicleMarker({
+  id,
+  onSelect,
+}: VehicleMarkerProps) {
+  const vehicle = useVehicleStore((state) =>
+    state.vehicles.find((v) => v.id === id),
+  );
+  const selected = useVehicleStore((state) => state.selectedVehicleId === id);
+
+  const icon = useMemo(
+    () => createStatusIcon(vehicle?.status ?? "stopped", selected),
+    [vehicle?.status, selected],
+  );
+
+  if (!vehicle) return null;
+
+  return (
+    <Marker
+      position={vehicle.position}
+      icon={icon}
+      eventHandlers={{ click: () => onSelect(id) }}
+    />
+  );
+});
+
 function MapFocusController() {
   const map = useMap();
   const selectedId = useVehicleStore((state) => state.selectedVehicleId);
@@ -71,16 +108,20 @@ function MapFocusController() {
       map.flyTo(vehicle.position as LatLngExpression, 15, { duration: 0.8 });
     }
     // vehicles excluded intentionally — avoids re-flying on every position tick
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, map]);
 
   return null;
 }
 
 export default function Map() {
-  const { vehicles } = useVehicles();
+  // Starts fetch + realtime engine — vehicles go into the store
+  useVehicles();
+
+  // Only re-renders Map when IDs change (vehicle added/removed), not on position ticks
+  const vehicleIds = useVehicleStore(
+    useShallow((state) => state.vehicles.map((v) => v.id)),
+  );
   const selectVehicle = useVehicleStore((state) => state.selectVehicle);
-  const selectedId = useVehicleStore((state) => state.selectedVehicleId);
   const { can } = usePermission();
   const canCreate = can("create:vehicle");
   const [addOpen, setAddOpen] = useState(false);
@@ -92,17 +133,11 @@ export default function Map() {
         zoom={13}
         style={{ height: "100%", width: "100%" }}
       >
-        {" "}
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MapFocusController />
-        <Marker position={FLEETOPS_HQ} icon={createHQIcon()} />
-        {vehicles.map((v) => (
-          <Marker
-            key={v.id}
-            position={v.position}
-            icon={createStatusIcon(v.status, v.id === selectedId)}
-            eventHandlers={{ click: () => selectVehicle(v.id) }}
-          />
+        <Marker position={FLEETOPS_HQ} icon={hqIcon} />
+        {vehicleIds.map((id) => (
+          <VehicleMarker key={id} id={id} onSelect={selectVehicle} />
         ))}
       </MapContainer>
       <VehicleDetailPanel />

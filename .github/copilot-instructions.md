@@ -206,7 +206,7 @@ Raw CSS variables live in `:root` and `.dark`. Tailwind `@theme inline` referenc
 
 ### Map
 
-- Tile layer: CartoDB Dark Matter (`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`)
+- Tile layer: OpenStreetMap (`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`)
 - Vehicle markers: SVG pin with status color fill and white stroke
 - Selected marker: larger `iconSize`, same color — never a different shape
 - No popups — selection opens the detail panel instead

@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { db } from "./db";
 import type { Vehicle } from "@/features/vehicles/types";
+import type { UserRole } from "@/features/users/types";
 
 function generateId(): string {
   return `v${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -43,5 +44,15 @@ export const handlers = [
 
   http.get("/users", () => {
     return HttpResponse.json(db.users);
+  }),
+
+  http.patch("/users/:id", async ({ params, request }) => {
+    const { id } = params as { id: string };
+    const body = (await request.json()) as { role: UserRole };
+    const index = db.users.findIndex((u) => u.id === id);
+    if (index === -1)
+      return HttpResponse.json({ error: "Not found" }, { status: 404 });
+    db.users[index] = { ...db.users[index], role: body.role };
+    return HttpResponse.json(db.users[index]);
   }),
 ];

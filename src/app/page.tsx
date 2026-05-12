@@ -35,17 +35,18 @@ export default function LandingPage() {
     <div className="relative h-screen w-full overflow-hidden">
       {/* Hero background — responsive */}
       <Image
-        src="/portada-md.png"
+        src="/portada-md.webp"
         alt="FleetOps hero"
         fill
         priority
-        className="object-cover object-center block md:hidden"
+        sizes="(max-width: 767px) 100vw, 0px"
       />
       <Image
-        src="/portada3.png"
+        src="/portada3.webp"
         alt="FleetOps hero"
         fill
         priority
+        sizes="100vw"
         className="object-cover object-center hidden md:block"
       />
 
@@ -55,7 +56,7 @@ export default function LandingPage() {
       {/* Top-left logo */}
       <div className="absolute top-6 left-8 z-10">
         <Image
-          src="/logo.png"
+          src="/logo.webp"
           alt="FleetOps"
           width={140}
           height={42}

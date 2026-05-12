@@ -49,3 +49,16 @@ body {
 .leaflet-marker-icon {
   overflow: visible !important;
 }
+
+/* Promote the actual pan layer to its own GPU compositing layer.
+   Chrome transforms .leaflet-map-pane on every drag frame —
+   will-change tells it to isolate this layer ahead of time. */
+.leaflet-map-pane {
+  will-change: transform;
+}
+
+/* Isolate the map container from the rest of the document.
+   Reduces Chrome's hit-test and paint work during drag. */
+.leaflet-container {
+  contain: layout style paint;
+}

@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -19,5 +22,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
 
   if (!ready) return null;
 
-  return <>{children}</>;
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }
