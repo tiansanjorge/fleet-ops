@@ -9,11 +9,25 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    import("@/mocks/browser").then(({ worker }) => {
-      worker.start({ onUnhandledRequest: "bypass" }).then(() => {
-        setReady(true);
+    const startWorker = () =>
+      import("@/mocks/browser").then(({ worker }) => {
+        worker.start({ onUnhandledRequest: "bypass" }).then(() => {
+          setReady(true);
+        });
       });
-    });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        startWorker();
+      }
+    };
+
+    startWorker();
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   if (!ready) return null;
