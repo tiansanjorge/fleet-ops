@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/core/auth/authStore";
@@ -23,8 +23,16 @@ const roleConfig: Record<
 
 export default function LandingPage() {
   const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState<User[]>(FAKE_USERS);
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/users")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: User[]) => setUsers(data))
+      .catch(() => {});
+  }, []);
 
   function handleLogin(user: User) {
     setUser(user);
@@ -86,7 +94,7 @@ export default function LandingPage() {
               : "opacity-0 translate-y-4 pointer-events-none"
           }`}
         >
-          {FAKE_USERS.map((user) => {
+          {users.map((user) => {
             const cfg = roleConfig[user.role];
             return (
               <button

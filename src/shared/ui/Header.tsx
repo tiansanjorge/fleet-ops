@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/core/auth/authStore";
 import { usePermission } from "@/core/permissions/usePermission";
 import { useUserStore } from "@/features/users/store/userStore";
@@ -25,12 +26,14 @@ function getInitials(name: string): string {
 
 export function Header() {
   const currentUser = useAuthStore((state) => state.currentUser);
+  const clearUser = useAuthStore((state) => state.clearUser);
   const { can } = usePermission();
   const panelOpen = useUserStore((state) => state.panelOpen);
   const setPanelOpen = useUserStore((state) => state.setPanelOpen);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const colorStyle = currentUser
     ? (roleInitialColors[currentUser.role] ?? roleInitialColors.viewer)
@@ -52,7 +55,8 @@ export function Header() {
 
   function handleSignOut() {
     setAvatarMenuOpen(false);
-    window.location.href = "/";
+    clearUser();
+    router.push("/");
   }
 
   return (

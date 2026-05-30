@@ -61,17 +61,17 @@ export const db: {
   users: [
     {
       id: "u1",
-      name: "Carlos Méndez",
+      name: "Ana García",
       role: "admin",
     },
     {
       id: "u2",
-      name: "Ana García",
+      name: "Carlos Méndez",
       role: "operator",
     },
     {
       id: "u3",
-      name: "Luis Herrera",
+      name: "Laura Ríos",
       role: "viewer",
     },
   ],
