@@ -15,9 +15,9 @@ const vehicles = [
 ];
 
 const seedUsers = [
-  { name: "Ana García", email: "ana.garcia@fleetops.dev", role: UserRole.admin },
-  { name: "Carlos Méndez", email: "carlos.mendez@fleetops.dev", role: UserRole.operator },
-  { name: "Laura Ríos", email: "laura.rios@fleetops.dev", role: UserRole.viewer },
+  { name: "Admin", email: "admin@fleetops.dev", role: UserRole.admin, password: "admin123" },
+  { name: "Operator", email: "operator@fleetops.dev", role: UserRole.operator, password: "password" },
+  { name: "Viewer", email: "viewer@fleetops.dev", role: UserRole.viewer, password: "password" },
 ];
 
 async function main() {
@@ -29,23 +29,13 @@ async function main() {
     await prisma.vehicle.create({ data: v });
   }
 
-  const defaultPasswordHash = await bcrypt.hash("password", 10);
-  for (const u of seedUsers) {
+  for (const { password, ...user } of seedUsers) {
     await prisma.user.create({
-      data: { ...u, passwordHash: defaultPasswordHash },
+      data: { ...user, passwordHash: await bcrypt.hash(password, 10) },
     });
   }
 
-  await prisma.user.create({
-    data: {
-      name: "Admin",
-      email: "admin@fleetops.dev",
-      passwordHash: await bcrypt.hash("admin123", 10),
-      role: UserRole.admin,
-    },
-  });
-
-  console.log(`Seeded ${vehicles.length} vehicles and ${seedUsers.length + 1} users`);
+  console.log(`Seeded ${vehicles.length} vehicles and ${seedUsers.length} users`);
 }
 
 main()
