@@ -1,0 +1,90 @@
+import type { FastifyInstance } from "fastify";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
+import type { Vehicle } from "@fleetops/types";
+import type { Vehicle as DbVehicle } from "@prisma/client";
+import {
+  vehicleSchema,
+  createVehicleSchema,
+  updateVehicleSchema,
+  vehicleParamsSchema,
+} from "./schemas.js";
+import { errorSchema } from "../../lib/http.js";
+
+// Mapper DB -> contrato del frontend. El tipo de retorno Vehicle garantiza
+// en compile-time que la respuesta respeta @fleetops/types.
+function toVehicleDTO(v: DbVehicle): Vehicle {
+  return {
+    id: v.id,
+    label: v.label,
+    position: [v.lat, v.lng],
+    status: v.status,
+  };
+}
+
+export default async function vehiclesRoutes(app: FastifyInstance) {
+  const r = app.withTypeProvider<ZodTypeProvider>();
+
+  r.get(
+    "/",
+    { schema: { response: { 200: z.array(vehicleSchema) } } },
+    async () => {
+      const vehicles = await app.prisma.vehicle.findMany({
+        orderBy: { label: "asc" },
+      });
+      return vehicles.map(toVehicleDTO);
+    },
+  );
+
+  r.post(
+    "/",
+    { schema: { body: createVehicleSchema, response: { 201: vehicleSchema } } },
+    async (req, reply) => {
+      const { label, position, status } = req.body;
+      const created = await app.prisma.vehicle.create({
+        data: { label, lat: position[0], lng: position[1], status },
+      });
+      return reply.code(201).send(toVehicleDTO(created));
+    },
+  );
+
+  r.put(
+    "/:id",
+    {
+      schema: {
+        params: vehicleParamsSchema,
+        body: updateVehicleSchema,
+        response: { 200: vehicleSchema, 404: errorSchema },
+      },
+    },
+    async (req, reply) => {
+      const { id } = req.params;
+      const existing = await app.prisma.vehicle.findUnique({ where: { id } });
+      if (!existing) return reply.code(404).send({ message: "Vehicle not found" });
+
+      const { label, position, status } = req.body;
+      const updated = await app.prisma.vehicle.update({
+        where: { id },
+        data: {
+          ...(label !== undefined && { label }),
+          ...(position !== undefined && { lat: position[0], lng: position[1] }),
+          ...(status !== undefined && { status }),
+        },
+      });
+      return toVehicleDTO(updated);
+    },
+  );
+
+  r.delete(
+    "/:id",
+    { schema: { params: vehicleParamsSchema } },
+    async (req, reply) => {
+      const { id } = req.params;
+      const existing = await app.prisma.vehicle.findUnique({ where: { id } });
+      if (!existing) return reply.code(404).send({ message: "Vehicle not found" });
+
+      await app.prisma.vehicle.delete({ where: { id } });
+      return reply.code(204).send();
+    },
+  );
+}

@@ -26,7 +26,7 @@ fleet-ops/
 
 **Frontend (apps/web):** completo y funcionando. Mapa con 8 vehículos moviéndose en tiempo real (simulado), alertas automáticas por severidad, RBAC con roles admin/operator/viewer, activity log. Datos vienen de MSW.
 
-**Backend (apps/api):** Fastify 5 corriendo en puerto 4000. Prisma conectado a PostgreSQL dockerizado. Schema migrado, seed aplicado (8 vehículos + 4 usuarios). Health check real (`SELECT 1`). Rutas de dominio, JWT y Socket.io **pendientes**.
+**Backend (apps/api):** Fastify 5 corriendo en puerto 4000. Prisma conectado a PostgreSQL dockerizado. Schema migrado, seed aplicado (8 vehículos + 3 usuarios). Health check real (`SELECT 1`). Rutas de dominio, JWT y Socket.io **pendientes**.
 
 **Tipos compartidos (packages/types):** `@fleetops/types` con todos los tipos de dominio. 28 imports en el frontend apuntan a este package.
 
