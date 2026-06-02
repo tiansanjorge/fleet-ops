@@ -10,6 +10,7 @@ import {
   vehicleParamsSchema,
 } from "./schemas.js";
 import { errorSchema } from "../../lib/http.js";
+import { EVENTS } from "../../realtime/events.js";
 
 // Mapper DB -> contrato del frontend. El tipo de retorno Vehicle garantiza
 // en compile-time que la respuesta respeta @fleetops/types.
@@ -50,7 +51,9 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
       const created = await app.prisma.vehicle.create({
         data: { label, lat: position[0], lng: position[1], status },
       });
-      return reply.code(201).send(toVehicleDTO(created));
+      const dto = toVehicleDTO(created);
+      app.io.emit(EVENTS.VEHICLE_CREATED, dto);
+      return reply.code(201).send(dto);
     },
   );
 
@@ -78,7 +81,9 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
           ...(status !== undefined && { status }),
         },
       });
-      return toVehicleDTO(updated);
+      const dto = toVehicleDTO(updated);
+      app.io.emit(EVENTS.VEHICLE_UPDATED, dto);
+      return dto;
     },
   );
 
@@ -94,6 +99,7 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
       if (!existing) return reply.code(404).send({ message: "Vehicle not found" });
 
       await app.prisma.vehicle.delete({ where: { id } });
+      app.io.emit(EVENTS.VEHICLE_DELETED, { id });
       return reply.code(204).send();
     },
   );

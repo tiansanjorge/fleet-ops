@@ -5,6 +5,7 @@ import {
 } from "fastify-type-provider-zod";
 import prismaPlugin from "./plugins/prisma.js";
 import authPlugin from "./plugins/auth.js";
+import socketioPlugin from "./plugins/socketio.js";
 import authRoutes from "./modules/auth/routes.js";
 import vehiclesRoutes from "./modules/vehicles/routes.js";
 import alertsRoutes from "./modules/alerts/routes.js";
@@ -21,6 +22,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(prismaPlugin);
   await app.register(authPlugin);
+  await app.register(socketioPlugin);
 
   app.get("/health", async () => {
     try {
