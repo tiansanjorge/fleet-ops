@@ -4,6 +4,8 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import prismaPlugin from "./plugins/prisma.js";
+import authPlugin from "./plugins/auth.js";
+import authRoutes from "./modules/auth/routes.js";
 import vehiclesRoutes from "./modules/vehicles/routes.js";
 import alertsRoutes from "./modules/alerts/routes.js";
 import usersRoutes from "./modules/users/routes.js";
@@ -18,6 +20,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.setSerializerCompiler(serializerCompiler);
 
   await app.register(prismaPlugin);
+  await app.register(authPlugin);
 
   app.get("/health", async () => {
     try {
@@ -28,6 +31,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     }
   });
 
+  await app.register(authRoutes, { prefix: "/auth" });
   await app.register(vehiclesRoutes, { prefix: "/vehicles" });
   await app.register(alertsRoutes, { prefix: "/alerts" });
   await app.register(usersRoutes, { prefix: "/users" });

@@ -25,7 +25,10 @@ export default async function alertsRoutes(app: FastifyInstance) {
 
   r.get(
     "/",
-    { schema: { response: { 200: z.array(alertSchema) } } },
+    {
+      preHandler: [app.authenticate, app.authorize("view:alerts")],
+      schema: { response: { 200: z.array(alertSchema) } },
+    },
     async () => {
       const alerts = await app.prisma.alert.findMany({
         orderBy: { timestamp: "desc" },
@@ -37,6 +40,7 @@ export default async function alertsRoutes(app: FastifyInstance) {
   r.patch(
     "/:id",
     {
+      preHandler: [app.authenticate, app.authorize("dismiss:alert")],
       schema: {
         params: alertParamsSchema,
         body: updateAlertSchema,

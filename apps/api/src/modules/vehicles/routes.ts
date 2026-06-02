@@ -27,7 +27,10 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
 
   r.get(
     "/",
-    { schema: { response: { 200: z.array(vehicleSchema) } } },
+    {
+      preHandler: [app.authenticate, app.authorize("view:vehicles")],
+      schema: { response: { 200: z.array(vehicleSchema) } },
+    },
     async () => {
       const vehicles = await app.prisma.vehicle.findMany({
         orderBy: { label: "asc" },
@@ -38,7 +41,10 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
 
   r.post(
     "/",
-    { schema: { body: createVehicleSchema, response: { 201: vehicleSchema } } },
+    {
+      preHandler: [app.authenticate, app.authorize("create:vehicle")],
+      schema: { body: createVehicleSchema, response: { 201: vehicleSchema } },
+    },
     async (req, reply) => {
       const { label, position, status } = req.body;
       const created = await app.prisma.vehicle.create({
@@ -51,6 +57,7 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
   r.put(
     "/:id",
     {
+      preHandler: [app.authenticate, app.authorize("edit:vehicle")],
       schema: {
         params: vehicleParamsSchema,
         body: updateVehicleSchema,
@@ -77,7 +84,10 @@ export default async function vehiclesRoutes(app: FastifyInstance) {
 
   r.delete(
     "/:id",
-    { schema: { params: vehicleParamsSchema } },
+    {
+      preHandler: [app.authenticate, app.authorize("delete:vehicle")],
+      schema: { params: vehicleParamsSchema },
+    },
     async (req, reply) => {
       const { id } = req.params;
       const existing = await app.prisma.vehicle.findUnique({ where: { id } });

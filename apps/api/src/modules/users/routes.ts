@@ -20,7 +20,10 @@ export default async function usersRoutes(app: FastifyInstance) {
 
   r.get(
     "/",
-    { schema: { response: { 200: z.array(userSchema) } } },
+    {
+      preHandler: [app.authenticate, app.authorize("manage:users")],
+      schema: { response: { 200: z.array(userSchema) } },
+    },
     async () => {
       const users = await app.prisma.user.findMany({ orderBy: { name: "asc" } });
       return users.map(toUserDTO);
@@ -30,6 +33,7 @@ export default async function usersRoutes(app: FastifyInstance) {
   r.patch(
     "/:id/role",
     {
+      preHandler: [app.authenticate, app.authorize("manage:users")],
       schema: {
         params: userParamsSchema,
         body: updateUserRoleSchema,
