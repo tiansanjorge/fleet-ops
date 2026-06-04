@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { useAlertStore } from "../store/alertStore";
 import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
 import { startRealtimeEngine } from "@/core/realtime/realtimeEngine";
+import { apiFetch } from "@/core/api/client";
+
+const IS_MOCK = process.env.NEXT_PUBLIC_API_MOCK === "true";
 
 export function useAlerts() {
   const alerts = useAlertStore((state) => state.alerts);
@@ -10,13 +13,16 @@ export function useAlerts() {
   const fireDemoAlert = useAlertStore((state) => state.fireDemoAlert);
 
   useEffect(() => {
-    fetch("/alerts")
-      .then((res) => res.json())
-      .then((data) => setAlerts(data));
+    apiFetch("/alerts")
+      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+      .then((data: unknown) => { if (Array.isArray(data)) setAlerts(data); })
+      .catch(() => {});
   }, [setAlerts]);
 
-  // Guaranteed alert 5s after mount so recruiters see the feature immediately
+  // Demo alert garantizada a los 5s — solo en modo mock para no mezclar
+  // alertas locales con las que ya llegan del servidor vía socket.
   useEffect(() => {
+    if (!IS_MOCK) return;
     const timer = setTimeout(() => {
       const vehicles = useVehicleStore.getState().vehicles;
       fireDemoAlert(vehicles);

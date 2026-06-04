@@ -4,6 +4,7 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import prismaPlugin from "./plugins/prisma.js";
+import corsPlugin from "./plugins/cors.js";
 import authPlugin from "./plugins/auth.js";
 import socketioPlugin from "./plugins/socketio.js";
 import authRoutes from "./modules/auth/routes.js";
@@ -20,6 +21,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
+  await app.register(corsPlugin);
   await app.register(prismaPlugin);
   await app.register(authPlugin);
   await app.register(socketioPlugin);

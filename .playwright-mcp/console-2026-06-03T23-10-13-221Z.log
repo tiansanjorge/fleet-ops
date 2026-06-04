@@ -1,0 +1,39 @@
+[    2042ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[    2112ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[   33688ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[   33703ms] [LOG] [Fast Refresh] done in 142ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2139865ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2139917ms] [LOG] [Fast Refresh] done in 146ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2140022ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2140706ms] [LOG] [Fast Refresh] done in 784ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2140841ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2140928ms] [LOG] [Fast Refresh] done in 197ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141190ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141270ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141522ms] [LOG] %cDocumentation: %chttps://mswjs.io/docs font-weight:bold font-weight:normal @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141522ms] [LOG] Found an issue? https://github.com/mswjs/msw/issues @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141522ms] [LOG] Worker script URL: http://localhost:3000/mockServiceWorker.js @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141522ms] [LOG] Worker scope: http://localhost:3000/ @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141522ms] [LOG] Client ID: %s (%s) a1c1776e-1a6d-455a-8e77-d96f17192a79 top-level @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141564ms] [LOG] Request {url: URL, method: GET, headers: Object, body: } @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141564ms] [LOG] Handler: HttpHandler @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141564ms] [LOG] Response {status: 200, statusText: OK, headers: Object, body: []} @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141629ms] [LOG] Request {url: URL, method: GET, headers: Object, body: } @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141630ms] [LOG] Handler: HttpHandler @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 2141630ms] [LOG] Response {status: 200, statusText: OK, headers: Object, body: [{"id":"u1","name":"Ana García","role":"admin"},{"…,{"id":"u3","name":"Laura Ríos","role":"viewer"}]} @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3547497ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3548724ms] [LOG] [Fast Refresh] done in 1338ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3548837ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3548860ms] [LOG] [Fast Refresh] done in 135ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3549036ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3549090ms] [LOG] [Fast Refresh] done in 164ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3556259ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3556344ms] [LOG] [Fast Refresh] done in 196ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557037ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557088ms] [LOG] [Fast Refresh] done in 152ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557221ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557303ms] [LOG] [Fast Refresh] done in 194ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557730ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3557751ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3560185ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431
+[ 3560216ms] [LOG] [Fast Refresh] done in 135ms @ http://localhost:3000/_next/static/chunks/0hk3_next_dist_0dmxu79._.js:2431

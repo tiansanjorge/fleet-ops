@@ -15,8 +15,8 @@ El proyecto es un **monorepo pnpm** con tres workspaces:
 ```
 fleet-ops/
 ├── apps/
-│   ├── web/     # Next.js 16 — frontend completo, corriendo con MSW
-│   └── api/     # Fastify 5 — backend con Prisma + PostgreSQL
+│   ├── web/     # Next.js 16 — frontend completo
+│   └── api/     # Fastify 5 — backend completo con Prisma + Socket.io + JWT
 ├── packages/
 │   └── types/   # @fleetops/types — tipos de dominio compartidos
 ├── docker-compose.yml
@@ -24,11 +24,20 @@ fleet-ops/
 └── CLAUDE.md
 ```
 
-**Frontend (apps/web):** completo y funcionando. Mapa con 8 vehículos moviéndose en tiempo real (simulado), alertas automáticas por severidad, RBAC con roles admin/operator/viewer, activity log. Datos vienen de MSW.
+**Frontend (apps/web):** completo y funcionando en ambos modos.
+- `NEXT_PUBLIC_API_MOCK=true` → MSW intercepta todos los fetch, simulación de movimiento y alertas en cliente.
+- `NEXT_PUBLIC_API_MOCK=false` → fetch real a Fastify (puerto 4000), JWT en localStorage, Socket.io conectado al backend (simulación server-side).
 
-**Backend (apps/api):** Fastify 5 corriendo en puerto 4000. Prisma conectado a PostgreSQL dockerizado. Schema migrado, seed aplicado (8 vehículos + 3 usuarios). Health check real (`SELECT 1`). Rutas de dominio, JWT y Socket.io **pendientes**.
+**Backend (apps/api):** completo. Fastify 5 en puerto 4000. Prisma + PostgreSQL dockerizado. JWT auth. Socket.io con simulación server-side que replica exactamente el comportamiento del frontend mock. CORS configurado. Todos los endpoints de dominio implementados.
 
-**Tipos compartidos (packages/types):** `@fleetops/types` con todos los tipos de dominio. 28 imports en el frontend apuntan a este package.
+**Tipos compartidos (packages/types):** `@fleetops/types` con todos los tipos de dominio + permisos RBAC. 28+ imports en el frontend apuntan a este package.
+
+### Fases completadas
+
+- **Fase F** ✅ — Rutas de dominio completas (vehicles, alerts, users con Zod schemas)
+- **Fase G** ✅ — JWT auth (POST /auth/login, GET /auth/me, plugin auth.ts, RBAC compartido en @fleetops/types)
+- **Fase H** ✅ — Socket.io + simulación server-side (réplica fiel del frontend mock)
+- **Fase I** ✅ — Adaptador frontend completo. Con `NEXT_PUBLIC_API_MOCK=false` el frontend consume la API real, login JWT real, WebSockets funcionando. CORS configurado. MSW sigue funcionando con `NEXT_PUBLIC_API_MOCK=true`.
 
 ---
 
@@ -40,16 +49,17 @@ fleet-ops/
 - TypeScript
 - Zustand (estado de dominio)
 - React Query (estado de servidor / async)
-- MSW (mock API — activo en dev vía `NEXT_PUBLIC_API_MOCK`)
+- MSW (mock API — activo en dev vía `NEXT_PUBLIC_API_MOCK=true`)
 - React Leaflet (mapa)
 - Tailwind v4
+- socket.io-client 4
 
 ### Backend (apps/api)
 
 - Fastify 5 + TypeScript
 - Prisma 6.x + PostgreSQL (Docker local, Railway en prod)
-- Socket.io 4 (pendiente de implementar)
-- @fastify/jwt (pendiente)
+- Socket.io 4
+- @fastify/jwt
 - fastify-type-provider-zod + Zod 4
 - bcryptjs (passwords)
 - tsx watch (dev, sin compilación)
@@ -73,10 +83,13 @@ src/
     alerts/               # Lista de alertas, severidad, dismiss
     users/                # Gestión de usuarios, cambio de rol
   core/
-    api/                  # Fetch wrapper base
+    api/
+      client.ts           # apiFetch — wrapper que inyecta JWT y construye URL absoluta en modo real
     permissions/          # RBAC — can('action:resource')
-    realtime/             # realtimeEngine.ts — se reemplazará por Socket.io
-    auth/                 # Sesión actual
+    realtime/
+      realtimeEngine.ts   # mock=true → timer local; mock=false → connectSocket()
+      socketClient.ts     # Socket.io singleton con JWT en handshake
+    auth/                 # Sesión actual (authStore con token + user)
   shared/
     ui/                   # Componentes genéricos reutilizables
     hooks/
@@ -98,20 +111,20 @@ src/
     env.ts                # Valida process.env con Zod
   plugins/
     prisma.ts             # fastify.prisma — singleton PrismaClient ✅
-    auth.ts               # fastify.authenticate — preHandler JWT (pendiente)
-    cors.ts               # @fastify/cors (pendiente)
-    socketio.ts           # fastify.io + middleware JWT (pendiente)
-  modules/                # Un módulo = un dominio
-    auth/                 # POST /auth/login, GET /auth/me (pendiente)
-    vehicles/             # GET/POST/PUT/DELETE /vehicles (pendiente)
-    alerts/               # GET /alerts, PATCH /alerts/:id (pendiente)
-    users/                # GET /users, PATCH /users/:id (pendiente)
+    auth.ts               # fastify.authenticate + fastify.authorize — preHandlers JWT/RBAC ✅
+    cors.ts               # @fastify/cors con methods y allowedHeaders explícitos ✅
+    socketio.ts           # fastify.io + middleware JWT ✅
+  modules/
+    auth/                 # POST /auth/login, GET /auth/me ✅
+    vehicles/             # GET/POST/PUT/DELETE /vehicles ✅
+    alerts/               # GET /alerts, PATCH /alerts/:id ✅
+    users/                # GET /users, PATCH /users/:id/role ✅
   realtime/
-    simulation.ts         # setInterval — mueve vehículos + emite eventos (pendiente)
-    events.ts             # Constantes de nombres de eventos (pendiente)
+    simulation.ts         # setInterval — mueve vehículos + emite eventos ✅
+    events.ts             # Constantes de nombres de eventos ✅
   lib/
-    hash.ts               # bcryptjs wrappers (pendiente)
-    errors.ts             # Error helpers (pendiente)
+    hash.ts               # bcryptjs wrappers ✅
+    errors.ts             # Error helpers ✅
 ```
 
 ---
@@ -173,39 +186,47 @@ Activo cuando `NEXT_PUBLIC_API_MOCK=true`. Intercepta todos los fetch del fronte
 - `GET /vehicles`
 - `GET /alerts`
 - `GET /users`
+- `PUT /vehicles/:id`
+- `DELETE /vehicles/:id`
+- `PATCH /users/:id/role`
 
 ### Fastify (backend real)
 
 Corre en `localhost:4000`. Activo cuando `NEXT_PUBLIC_API_MOCK=false`.
 
 - `GET /health` → `{ status: 'ok', db: 'connected' }` ✅
-- `POST /auth/login` → `{ token, user }` (pendiente)
-- `GET /auth/me` (pendiente)
-- `GET /vehicles`, `POST`, `PUT /:id`, `DELETE /:id` (pendiente)
-- `GET /alerts`, `PATCH /:id` (pendiente)
-- `GET /users`, `PATCH /:id/role` (pendiente)
+- `POST /auth/login` → `{ token, user }` ✅
+- `GET /auth/me` ✅
+- `GET /vehicles` ✅
+- `POST /vehicles` ✅
+- `PUT /vehicles/:id` ✅
+- `DELETE /vehicles/:id` ✅
+- `GET /alerts` ✅
+- `PATCH /alerts/:id` ✅
+- `GET /users` ✅
+- `PATCH /users/:id/role` ✅
 
 ---
 
 ## Realtime
 
-### Actual (simulado en frontend)
+### mock=true (simulado en cliente)
 
-`core/realtime/realtimeEngine.ts` — setInterval que emite posiciones y alertas.
+`core/realtime/realtimeEngine.ts` — setInterval que emite posiciones y alertas desde el cliente. `startRealtimeEngine(onTick)` corre el timer local.
 
-### Target (Socket.io)
+### mock=false (Socket.io real)
 
-Single namespace `/`, sin rooms en MVP. Auth en handshake con JWT.
+`realtimeEngine.ts` → `connectSocket()` → Socket.io singleton con JWT en handshake (`auth: { token }`). Los consumidores del engine no cambian — el cambio es quirúrgico.
 
 Eventos server → cliente:
 
 - `vehicle:position` → `{ id, position: [lat, lng], status }`
-- `vehicle:created / updated / deleted`
+- `vehicle:created` → Vehicle completo
+- `vehicle:updated` → Vehicle completo
+- `vehicle:deleted` → `{ id }`
 - `alert:new` → Alert completo
 
 Eventos cliente → server: ninguno en MVP. Mutaciones siguen siendo REST.
-
-El `realtimeEngine.ts` del frontend está diseñado para que el cambio sea quirúrgico — solo cambia la implementación, no los consumidores.
 
 ---
 
@@ -247,7 +268,7 @@ NODE_ENV="development"
 ```
 NEXT_PUBLIC_API_URL="http://localhost:4000"
 NEXT_PUBLIC_WS_URL="http://localhost:4000"
-NEXT_PUBLIC_API_MOCK="true"
+NEXT_PUBLIC_API_MOCK="true"   # cambiar a "false" para usar el backend real
 ```
 
 ---
@@ -269,16 +290,18 @@ pnpm dev:web
 
 ## Decisiones arquitectónicas clave
 
-| Decisión          | Elección                            | Por qué                                                                    |
-| ----------------- | ----------------------------------- | -------------------------------------------------------------------------- |
-| Monorepo          | pnpm workspaces                     | Nativo, sin overhead. Turborepo se agrega si la build se vuelve lenta      |
-| Framework backend | Fastify 5                           | Más liviano que NestJS, más explicable para portfolio frontend-oriented    |
-| ORM               | Prisma                              | Type-safe, migrations, familiar para frontend devs                         |
-| Mock API          | MSW                                 | Intercepta fetch real — el frontend no sabe si habla con MSW o backend     |
-| Tipos compartidos | Sin build (tsx + transpilePackages) | Cero overhead, cambio en types se refleja en ambos workspaces sin compilar |
-| Passwords         | bcryptjs                            | Evita node-gyp en Windows                                                  |
-| Timestamps Alert  | BigInt en DB                        | Epoch ms — se transforma en la capa de routes                              |
-| Socket.io rooms   | Sin rooms en MVP                    | Se agregan después si hace falta filtrar por vehículo                      |
+| Decisión              | Elección                            | Por qué                                                                    |
+| --------------------- | ----------------------------------- | -------------------------------------------------------------------------- |
+| Monorepo              | pnpm workspaces                     | Nativo, sin overhead. Turborepo se agrega si la build se vuelve lenta      |
+| Framework backend     | Fastify 5                           | Más liviano que NestJS, más explicable para portfolio frontend-oriented    |
+| ORM                   | Prisma                              | Type-safe, migrations, familiar para frontend devs                         |
+| Mock API              | MSW                                 | Intercepta fetch real — el frontend no sabe si habla con MSW o backend     |
+| Tipos compartidos     | Sin build (tsx + transpilePackages) | Cero overhead, cambio en types se refleja en ambos workspaces sin compilar |
+| Passwords             | bcryptjs                            | Evita node-gyp en Windows                                                  |
+| Timestamps Alert      | BigInt en DB                        | Epoch ms — se transforma en la capa de routes                              |
+| Socket.io rooms       | Sin rooms en MVP                    | Se agregan después si hace falta filtrar por vehículo                      |
+| CORS allowedHeaders   | Explícitos (Content-Type, Auth)     | Sin lista explícita, algunos browsers no envían PUT/DELETE tras preflight  |
+| createVehicle no-mock | addVehicle solo vía socket          | El POST emite vehicle:created — agregar desde REST y socket causa duplicado |
 
 ---
 
@@ -297,18 +320,22 @@ pnpm dev:web
 ## Credenciales demo (seed)
 
 ```
-        admin@fleetops.dev / admin123 / rol admin
-        operator@fleetops.dev / password / rol operator
-        viewer@fleetops.dev / password / rol viewer
+anagarcia@fleetops.com    / admin123  / rol admin    (Ana García)
+carlosmendez@fleetops.com / password  / rol operator (Carlos Méndez)
+laurarios@fleetops.com    / password  / rol viewer   (Laura Ríos)
 ```
 
 ---
 
-## Lo que falta (próximas fases)
+## Lo que falta
 
-1. **Rutas de dominio** — vehicles, alerts, users con Zod schemas
-2. **JWT auth** — POST /auth/login, plugin auth.ts, preHandler en rutas protegidas
-3. **Socket.io** — plugin socketio.ts, simulation.ts con setInterval server-side
-4. **Adaptador frontend** — cliente fetch que lee NEXT_PUBLIC_API_MOCK, cliente Socket.io que reemplaza realtimeEngine
-5. **Deploy** — Vercel (web) + Railway (api + postgres)
-6. **README** — arquitectura y decisiones para el portfolio
+1. **Bugs pendientes** — ver listado detallado abajo
+2. **Deploy** — Vercel (web) + Railway (api + postgres)
+3. **README** — arquitectura y decisiones para el portfolio
+
+### Bugs conocidos (modo NEXT_PUBLIC_API_MOCK=false)
+
+- ~~BUG 1~~ ✅ — Vehículo duplicado al crear (REST + socket ambos hacían addVehicle)
+- ~~BUG 2/3~~ ✅ — PUT/DELETE no llegaban al servidor (CORS sin allowedHeaders explícitos)
+- ~~BUG 4~~ ✅ — PATCH /alerts/:id no persistía (solo actualizaba el store local)
+- ~~BUG 5~~ ✅ — Login one-click sin credenciales visibles (reemplazado por modal)

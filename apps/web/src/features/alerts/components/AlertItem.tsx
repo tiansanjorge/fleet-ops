@@ -2,7 +2,7 @@
 
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
-import { useAlertStore } from "../store/alertStore";
+import { useAlertMutations } from "../hooks/useAlertMutations";
 import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
 import type { Alert, AlertSeverity } from "@fleetops/types";
 
@@ -28,9 +28,7 @@ interface AlertItemProps {
 }
 
 export function AlertItem({ alert, showDismiss }: AlertItemProps) {
-  const markAsRead = useAlertStore((state) => state.markAsRead);
-  const markAsUnread = useAlertStore((state) => state.markAsUnread);
-  const dismissAlert = useAlertStore((state) => state.dismissAlert);
+  const { markAsRead, markAsUnread, dismissAlert } = useAlertMutations();
   const selectVehicle = useVehicleStore((state) => state.selectVehicle);
   const vehicleLabel = useVehicleStore(
     (state) => state.vehicles.find((v) => v.id === alert.vehicleId)?.label ?? alert.vehicleId,

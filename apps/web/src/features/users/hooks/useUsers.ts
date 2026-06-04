@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserStore } from "../store/userStore";
+import { apiFetch } from "@/core/api/client";
 import type { User, UserRole } from "@fleetops/types";
 
 async function fetchUsers(): Promise<User[]> {
-  const res = await fetch("/users");
+  const res = await apiFetch("/users");
   if (!res.ok) throw new Error("Failed to fetch users");
   return res.json();
 }
 
 async function patchUserRole(id: string, role: UserRole): Promise<User> {
-  const res = await fetch(`/users/${id}`, {
+  // El backend expone PATCH /users/:id/role (no /users/:id).
+  const res = await apiFetch(`/users/${id}/role`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ role }),

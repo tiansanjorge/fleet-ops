@@ -1,0 +1,24 @@
+- generic [ref=e2]:
+  - img "FleetOps hero" [ref=e3]
+  - img "FleetOps" [ref=e6]
+  - generic [ref=e7]:
+    - generic:
+      - button "Admin Ana García":
+        - generic:
+          - paragraph: Admin
+          - paragraph: Ana García
+        - img
+      - button "Operator Carlos Méndez":
+        - generic:
+          - paragraph: Operator
+          - paragraph: Carlos Méndez
+        - img
+      - button "Viewer Laura Ríos":
+        - generic:
+          - paragraph: Viewer
+          - paragraph: Laura Ríos
+        - img
+    - button "Sign in" [ref=e8] [cursor=pointer]:
+      - generic [ref=e11]:
+        - text: Sign in
+        - img [ref=e12]

@@ -15,9 +15,9 @@ const vehicles = [
 ];
 
 const seedUsers = [
-  { name: "Admin", email: "admin@fleetops.dev", role: UserRole.admin, password: "admin123" },
-  { name: "Operator", email: "operator@fleetops.dev", role: UserRole.operator, password: "password" },
-  { name: "Viewer", email: "viewer@fleetops.dev", role: UserRole.viewer, password: "password" },
+  { name: "Ana García",    email: "anagarcia@fleetops.com",    role: UserRole.admin,    password: "admin123" },
+  { name: "Carlos Méndez", email: "carlosmendez@fleetops.com", role: UserRole.operator, password: "password" },
+  { name: "Laura Ríos",    email: "laurarios@fleetops.com",    role: UserRole.viewer,   password: "password" },
 ];
 
 async function main() {

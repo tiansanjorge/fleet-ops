@@ -37,7 +37,7 @@ function MoonIcon() {
       height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
+      stroke="white"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -58,7 +58,7 @@ export function ThemeToggle() {
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
       title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className="inline-flex cursor-pointer items-center justify-center w-8 h-8 rounded-md text-muted hover:text-zinc-900 hover:bg-zinc-100 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150"
+      className="inline-flex cursor-pointer items-center justify-center w-8 h-8 rounded-md text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150"
     >
       {theme === "dark" ? <SunIcon /> : <MoonIcon />}
     </button>

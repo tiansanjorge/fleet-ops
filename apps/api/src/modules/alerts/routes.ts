@@ -40,7 +40,11 @@ export default async function alertsRoutes(app: FastifyInstance) {
   r.patch(
     "/:id",
     {
-      preHandler: [app.authenticate, app.authorize("dismiss:alert")],
+      // view:alerts — todos los roles con acceso a alertas pueden marcar como
+      // leída/no-leída y hacer dismiss. El dismiss button en la UI ya está
+      // protegido por can('dismiss:alert'); no duplicar aquí ese check o
+      // viewer recibiría 403 al hacer "Mark as read".
+      preHandler: [app.authenticate, app.authorize("view:alerts")],
       schema: {
         params: alertParamsSchema,
         body: updateAlertSchema,

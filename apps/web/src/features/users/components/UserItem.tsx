@@ -8,6 +8,7 @@ const ALL_ROLES: UserRole[] = ["admin", "operator", "viewer"];
 
 interface UserItemProps {
   user: User;
+  draftRole: UserRole;
   isCurrentUser: boolean;
   onRoleChange: (id: string, role: UserRole) => void;
   isPending: boolean;
@@ -15,6 +16,7 @@ interface UserItemProps {
 
 export function UserItem({
   user,
+  draftRole,
   isCurrentUser,
   onRoleChange,
   isPending,
@@ -37,7 +39,7 @@ export function UserItem({
     viewer: { bg: "bg-zinc-500/15", text: "text-zinc-400" },
   };
 
-  const { bg, text } = avatarColors[user.role];
+  const { bg, text } = avatarColors[draftRole];
 
   return (
     <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0">
@@ -63,7 +65,7 @@ export function UserItem({
       {/* Role — editable if can manage:users AND not the current admin's own row */}
       {canManage && !(isCurrentUser && user.role === "admin") ? (
         <select
-          value={user.role}
+          value={draftRole}
           disabled={isPending}
           onChange={(e) => onRoleChange(user.id, e.target.value as UserRole)}
           className="cursor-pointer rounded-md border border-border bg-surface-raised px-2 py-0.5 text-xs font-medium text-foreground transition-colors duration-150 hover:border-zinc-400 dark:hover:border-zinc-500 disabled:opacity-40 disabled:cursor-default disabled:pointer-events-none focus:outline-none"
@@ -75,7 +77,7 @@ export function UserItem({
           ))}
         </select>
       ) : (
-        <UserRoleBadge role={user.role} />
+        <UserRoleBadge role={draftRole} />
       )}
     </div>
   );

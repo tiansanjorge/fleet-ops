@@ -10,9 +10,9 @@ import { UserList } from "@/features/users/components/UserList";
 import { ThemeToggle } from "@/shared/ui/ThemeToggle";
 
 const roleInitialColors: Record<string, { bg: string; text: string }> = {
-  admin: { bg: "bg-red-500/15", text: "text-red-400" },
-  operator: { bg: "bg-blue-500/15", text: "text-blue-400" },
-  viewer: { bg: "bg-zinc-500/15", text: "text-zinc-400" },
+  admin: { bg: "bg-red-500", text: "text-white" },
+  operator: { bg: "bg-blue-900", text: "text-white" },
+  viewer: { bg: "bg-zinc-500", text: "text-white" },
 };
 
 function getInitials(name: string): string {
@@ -72,8 +72,11 @@ export function Header() {
           className="object-cover object-center"
           aria-hidden="true"
         />
-        {/* Overlay for contrast */}
-        <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
+        {/* Overlay for contrast — light en light mode, dark en dark mode */}
+        <div
+          className="absolute inset-0 bg-white/15 dark:bg-black/45"
+          aria-hidden="true"
+        />
 
         {/* Logo */}
         <Image

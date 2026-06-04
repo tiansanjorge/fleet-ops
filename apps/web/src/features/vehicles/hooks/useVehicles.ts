@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useVehicleStore } from "../store/vehicleStore";
 import { startRealtimeEngine } from "../../../core/realtime/realtimeEngine";
+import { apiFetch } from "@/core/api/client";
 
 export function useVehicles() {
   const vehicles = useVehicleStore((state) => state.vehicles);
@@ -8,9 +9,10 @@ export function useVehicles() {
   const updatePositions = useVehicleStore((state) => state.updatePositions);
 
   useEffect(() => {
-    fetch("/vehicles")
-      .then((res) => res.json())
-      .then((data) => setVehicles(data));
+    apiFetch("/vehicles")
+      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+      .then((data: unknown) => { if (Array.isArray(data)) setVehicles(data); })
+      .catch(() => {});
   }, [setVehicles]);
 
   useEffect(() => {

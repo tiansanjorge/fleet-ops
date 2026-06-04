@@ -1,0 +1,559 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e19] [cursor=pointer]:
+    - img [ref=e20]
+  - alert [ref=e23]
+  - generic [ref=e52]:
+    - banner [ref=e53]:
+      - img [ref=e54]
+      - img "FleetOps" [ref=e56]
+      - generic [ref=e57]:
+        - button "Switch to dark mode" [ref=e58] [cursor=pointer]:
+          - img [ref=e59]
+        - button "Toggle users panel" [ref=e61] [cursor=pointer]:
+          - img [ref=e62]
+          - text: Manage users
+        - button "User menu" [ref=e68] [cursor=pointer]: A
+    - main [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - generic:
+              - generic:
+                - button [ref=e73] [cursor=pointer]:
+                  - img [ref=e74]
+                - button [ref=e77] [cursor=pointer]:
+                  - img [ref=e78]
+                - button [ref=e81] [cursor=pointer]:
+                  - img [ref=e82]
+                - button [ref=e85] [cursor=pointer]:
+                  - img [ref=e86]
+                - button [ref=e89] [cursor=pointer]:
+                  - img [ref=e90]
+                - button [ref=e93] [cursor=pointer]:
+                  - img [ref=e94]
+                - button [ref=e97] [cursor=pointer]:
+                  - img [ref=e98]
+                - button [ref=e101] [cursor=pointer]:
+                  - img [ref=e102]
+                - button [ref=e105] [cursor=pointer]:
+                  - img [ref=e106]
+            - generic:
+              - generic [ref=e109]:
+                - button "Zoom in" [ref=e110] [cursor=pointer]: +
+                - button "Zoom out" [ref=e111] [cursor=pointer]: −
+              - link "Leaflet" [ref=e113] [cursor=pointer]:
+                - /url: https://leafletjs.com
+                - img [ref=e114]
+                - text: Leaflet
+          - button "Add vehicle" [ref=e118] [cursor=pointer]:
+            - img [ref=e119]
+            - text: Add vehicle
+        - generic [ref=e121]:
+          - generic [ref=e122]:
+            - generic [ref=e123]:
+              - generic [ref=e124]:
+                - generic [ref=e125]: Alerts
+                - generic [ref=e126]: 41 unread · 41 active · 41 total
+              - button "Close panel" [ref=e127] [cursor=pointer]:
+                - img [ref=e128]
+            - generic [ref=e130]:
+              - button "Active" [ref=e131] [cursor=pointer]: Active
+              - button "History" [ref=e133] [cursor=pointer]
+            - generic [ref=e134]:
+              - button "all" [ref=e135] [cursor=pointer]: all
+              - button "low" [ref=e137] [cursor=pointer]
+              - button "medium" [ref=e138] [cursor=pointer]
+              - button "critical" [ref=e139] [cursor=pointer]
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - generic [ref=e146]:
+                  - generic [ref=e147]: critical
+                  - generic [ref=e148]: 04:07:54
+                - paragraph [ref=e149]: Sudden swerve detected — possible collision risk
+              - generic [ref=e150]:
+                - button "Truck 06" [ref=e151] [cursor=pointer]:
+                  - img [ref=e152]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e154] [cursor=pointer]
+                - button "Dismiss" [ref=e155] [cursor=pointer]
+            - generic [ref=e156]:
+              - generic [ref=e157]:
+                - generic [ref=e158]:
+                  - generic [ref=e159]: medium
+                  - generic [ref=e160]: 04:07:43
+                - paragraph [ref=e161]: Tire pressure warning — front left
+              - generic [ref=e162]:
+                - button "Truck 06" [ref=e163] [cursor=pointer]:
+                  - img [ref=e164]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e166] [cursor=pointer]
+                - button "Dismiss" [ref=e167] [cursor=pointer]
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic [ref=e170]:
+                  - generic [ref=e171]: low
+                  - generic [ref=e172]: 04:07:12
+                - paragraph [ref=e173]: Engine RPM above normal range
+              - generic [ref=e174]:
+                - button "Truck 06" [ref=e175] [cursor=pointer]:
+                  - img [ref=e176]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e178] [cursor=pointer]
+                - button "Dismiss" [ref=e179] [cursor=pointer]
+            - generic [ref=e180]:
+              - generic [ref=e181]:
+                - generic [ref=e182]:
+                  - generic [ref=e183]: medium
+                  - generic [ref=e184]: 04:06:30
+                - paragraph [ref=e185]: Driver break overdue (4h continuous driving)
+              - generic [ref=e186]:
+                - button "Truck 06" [ref=e187] [cursor=pointer]:
+                  - img [ref=e188]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e190] [cursor=pointer]
+                - button "Dismiss" [ref=e191] [cursor=pointer]
+            - generic [ref=e192]:
+              - generic [ref=e193]:
+                - generic [ref=e194]:
+                  - generic [ref=e195]: critical
+                  - generic [ref=e196]: 04:06:10
+                - paragraph [ref=e197]: Emergency stop activated by driver
+              - generic [ref=e198]:
+                - button "Truck 02" [ref=e199] [cursor=pointer]:
+                  - img [ref=e200]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e202] [cursor=pointer]
+                - button "Dismiss" [ref=e203] [cursor=pointer]
+            - generic [ref=e204]:
+              - generic [ref=e205]:
+                - generic [ref=e206]:
+                  - generic [ref=e207]: medium
+                  - generic [ref=e208]: 04:05:32
+                - paragraph [ref=e209]: Driver not checked in after scheduled stop
+              - generic [ref=e210]:
+                - button "Truck 02" [ref=e211] [cursor=pointer]:
+                  - img [ref=e212]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e214] [cursor=pointer]
+                - button "Dismiss" [ref=e215] [cursor=pointer]
+            - generic [ref=e216]:
+              - generic [ref=e217]:
+                - generic [ref=e218]:
+                  - generic [ref=e219]: medium
+                  - generic [ref=e220]: 04:04:48
+                - paragraph [ref=e221]: Vehicle stopped in no-parking zone
+              - generic [ref=e222]:
+                - button "Truck 02" [ref=e223] [cursor=pointer]:
+                  - img [ref=e224]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e226] [cursor=pointer]
+                - button "Dismiss" [ref=e227] [cursor=pointer]
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - generic [ref=e230]:
+                  - generic [ref=e231]: critical
+                  - generic [ref=e232]: 04:01:24
+                - paragraph [ref=e233]: Engine temperature high while idle
+              - generic [ref=e234]:
+                - button "Truck 05" [ref=e235] [cursor=pointer]:
+                  - img [ref=e236]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e238] [cursor=pointer]
+                - button "Dismiss" [ref=e239] [cursor=pointer]
+            - generic [ref=e240]:
+              - generic [ref=e241]:
+                - generic [ref=e242]:
+                  - generic [ref=e243]: low
+                  - generic [ref=e244]: 04:00:56
+                - paragraph [ref=e245]: Route deviation — not on assigned path
+              - generic [ref=e246]:
+                - button "Truck 05" [ref=e247] [cursor=pointer]:
+                  - img [ref=e248]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e250] [cursor=pointer]
+                - button "Dismiss" [ref=e251] [cursor=pointer]
+            - generic [ref=e252]:
+              - generic [ref=e253]:
+                - generic [ref=e254]:
+                  - generic [ref=e255]: low
+                  - generic [ref=e256]: 04:00:38
+                - paragraph [ref=e257]: Route deviation — not on assigned path
+              - generic [ref=e258]:
+                - button "Truck 05" [ref=e259] [cursor=pointer]:
+                  - img [ref=e260]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e262] [cursor=pointer]
+                - button "Dismiss" [ref=e263] [cursor=pointer]
+            - generic [ref=e264]:
+              - generic [ref=e265]:
+                - generic [ref=e266]:
+                  - generic [ref=e267]: medium
+                  - generic [ref=e268]: 03:59:50
+                - paragraph [ref=e269]: Harsh braking event detected
+              - generic [ref=e270]:
+                - button "Truck 05" [ref=e271] [cursor=pointer]:
+                  - img [ref=e272]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e274] [cursor=pointer]
+                - button "Dismiss" [ref=e275] [cursor=pointer]
+            - generic [ref=e276]:
+              - generic [ref=e277]:
+                - generic [ref=e278]:
+                  - generic [ref=e279]: low
+                  - generic [ref=e280]: 03:59:21
+                - paragraph [ref=e281]: Speed limit exceeded on urban road
+              - generic [ref=e282]:
+                - button "Truck 05" [ref=e283] [cursor=pointer]:
+                  - img [ref=e284]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e286] [cursor=pointer]
+                - button "Dismiss" [ref=e287] [cursor=pointer]
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - generic [ref=e290]:
+                  - generic [ref=e291]: medium
+                  - generic [ref=e292]: 03:58:38
+                - paragraph [ref=e293]: Harsh braking event detected
+              - generic [ref=e294]:
+                - button "Truck 06" [ref=e295] [cursor=pointer]:
+                  - img [ref=e296]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e298] [cursor=pointer]
+                - button "Dismiss" [ref=e299] [cursor=pointer]
+            - generic [ref=e300]:
+              - generic [ref=e301]:
+                - generic [ref=e302]:
+                  - generic [ref=e303]: low
+                  - generic [ref=e304]: 03:57:48
+                - paragraph [ref=e305]: Speed limit exceeded on urban road
+              - generic [ref=e306]:
+                - button "Truck 02" [ref=e307] [cursor=pointer]:
+                  - img [ref=e308]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e310] [cursor=pointer]
+                - button "Dismiss" [ref=e311] [cursor=pointer]
+            - generic [ref=e312]:
+              - generic [ref=e313]:
+                - generic [ref=e314]:
+                  - generic [ref=e315]: medium
+                  - generic [ref=e316]: 03:57:28
+                - paragraph [ref=e317]: Idle time exceeding delivery window
+              - generic [ref=e318]:
+                - button "Truck 06" [ref=e319] [cursor=pointer]:
+                  - img [ref=e320]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e322] [cursor=pointer]
+                - button "Dismiss" [ref=e323] [cursor=pointer]
+            - generic [ref=e324]:
+              - generic [ref=e325]:
+                - generic [ref=e326]:
+                  - generic [ref=e327]: medium
+                  - generic [ref=e328]: 03:57:06
+                - paragraph [ref=e329]: Tire pressure warning — front left
+              - generic [ref=e330]:
+                - button "Truck 02" [ref=e331] [cursor=pointer]:
+                  - img [ref=e332]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e334] [cursor=pointer]
+                - button "Dismiss" [ref=e335] [cursor=pointer]
+            - generic [ref=e336]:
+              - generic [ref=e337]:
+                - generic [ref=e338]:
+                  - generic [ref=e339]: medium
+                  - generic [ref=e340]: 03:56:10
+                - paragraph [ref=e341]: Vehicle entered restricted zone
+              - generic [ref=e342]:
+                - button "Truck 05" [ref=e343] [cursor=pointer]:
+                  - img [ref=e344]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e346] [cursor=pointer]
+                - button "Dismiss" [ref=e347] [cursor=pointer]
+            - generic [ref=e348]:
+              - generic [ref=e349]:
+                - generic [ref=e350]:
+                  - generic [ref=e351]: medium
+                  - generic [ref=e352]: 03:55:47
+                - paragraph [ref=e353]: Tire pressure warning — front left
+              - generic [ref=e354]:
+                - button "Truck 05" [ref=e355] [cursor=pointer]:
+                  - img [ref=e356]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e358] [cursor=pointer]
+                - button "Dismiss" [ref=e359] [cursor=pointer]
+            - generic [ref=e360]:
+              - generic [ref=e361]:
+                - generic [ref=e362]:
+                  - generic [ref=e363]: low
+                  - generic [ref=e364]: 03:55:08
+                - paragraph [ref=e365]: Speed limit exceeded on urban road
+              - generic [ref=e366]:
+                - button "Truck 02" [ref=e367] [cursor=pointer]:
+                  - img [ref=e368]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e370] [cursor=pointer]
+                - button "Dismiss" [ref=e371] [cursor=pointer]
+            - generic [ref=e372]:
+              - generic [ref=e373]:
+                - generic [ref=e374]:
+                  - generic [ref=e375]: critical
+                  - generic [ref=e376]: 03:53:21
+                - paragraph [ref=e377]: Collision detected — vehicle unresponsive
+              - generic [ref=e378]:
+                - button "Truck 03" [ref=e379] [cursor=pointer]:
+                  - img [ref=e380]
+                  - text: Truck 03
+                - button "Mark as read" [ref=e382] [cursor=pointer]
+                - button "Dismiss" [ref=e383] [cursor=pointer]
+            - generic [ref=e384]:
+              - generic [ref=e385]:
+                - generic [ref=e386]:
+                  - generic [ref=e387]: low
+                  - generic [ref=e388]: 03:51:31
+                - paragraph [ref=e389]: Engine RPM above normal range
+              - generic [ref=e390]:
+                - button "Truck 06" [ref=e391] [cursor=pointer]:
+                  - img [ref=e392]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e394] [cursor=pointer]
+                - button "Dismiss" [ref=e395] [cursor=pointer]
+            - generic [ref=e396]:
+              - generic [ref=e397]:
+                - generic [ref=e398]:
+                  - generic [ref=e399]: medium
+                  - generic [ref=e400]: 03:51:22
+                - paragraph [ref=e401]: Driver break overdue (4h continuous driving)
+              - generic [ref=e402]:
+                - button "Truck 03" [ref=e403] [cursor=pointer]:
+                  - img [ref=e404]
+                  - text: Truck 03
+                - button "Mark as read" [ref=e406] [cursor=pointer]
+                - button "Dismiss" [ref=e407] [cursor=pointer]
+            - generic [ref=e408]:
+              - generic [ref=e409]:
+                - generic [ref=e410]:
+                  - generic [ref=e411]: critical
+                  - generic [ref=e412]: 03:50:50
+                - paragraph [ref=e413]: Collision detected — vehicle unresponsive
+              - generic [ref=e414]:
+                - button "Truck 07" [ref=e415] [cursor=pointer]:
+                  - img [ref=e416]
+                  - text: Truck 07
+                - button "Mark as read" [ref=e418] [cursor=pointer]
+                - button "Dismiss" [ref=e419] [cursor=pointer]
+            - generic [ref=e420]:
+              - generic [ref=e421]:
+                - generic [ref=e422]:
+                  - generic [ref=e423]: medium
+                  - generic [ref=e424]: 03:50:37
+                - paragraph [ref=e425]: Idle time exceeding delivery window
+              - generic [ref=e426]:
+                - button "Truck 06" [ref=e427] [cursor=pointer]:
+                  - img [ref=e428]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e430] [cursor=pointer]
+                - button "Dismiss" [ref=e431] [cursor=pointer]
+            - generic [ref=e432]:
+              - generic [ref=e433]:
+                - generic [ref=e434]:
+                  - generic [ref=e435]: medium
+                  - generic [ref=e436]: 03:49:41
+                - paragraph [ref=e437]: Idle time exceeding delivery window
+              - generic [ref=e438]:
+                - button "Truck 07" [ref=e439] [cursor=pointer]:
+                  - img [ref=e440]
+                  - text: Truck 07
+                - button "Mark as read" [ref=e442] [cursor=pointer]
+                - button "Dismiss" [ref=e443] [cursor=pointer]
+            - generic [ref=e444]:
+              - generic [ref=e445]:
+                - generic [ref=e446]:
+                  - generic [ref=e447]: low
+                  - generic [ref=e448]: 03:49:18
+                - paragraph [ref=e449]: Scheduled maintenance overdue
+              - generic [ref=e450]:
+                - button "Truck 07" [ref=e451] [cursor=pointer]:
+                  - img [ref=e452]
+                  - text: Truck 07
+                - button "Mark as read" [ref=e454] [cursor=pointer]
+                - button "Dismiss" [ref=e455] [cursor=pointer]
+            - generic [ref=e456]:
+              - generic [ref=e457]:
+                - generic [ref=e458]:
+                  - generic [ref=e459]: critical
+                  - generic [ref=e460]: 03:48:35
+                - paragraph [ref=e461]: Sudden swerve detected — possible collision risk
+              - generic [ref=e462]:
+                - button "Truck 04" [ref=e463] [cursor=pointer]:
+                  - img [ref=e464]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e466] [cursor=pointer]
+                - button "Dismiss" [ref=e467] [cursor=pointer]
+            - generic [ref=e468]:
+              - generic [ref=e469]:
+                - generic [ref=e470]:
+                  - generic [ref=e471]: medium
+                  - generic [ref=e472]: 03:47:37
+                - paragraph [ref=e473]: Harsh braking event detected
+              - generic [ref=e474]:
+                - button "Truck 02" [ref=e475] [cursor=pointer]:
+                  - img [ref=e476]
+                  - text: Truck 02
+                - button "Mark as read" [ref=e478] [cursor=pointer]
+                - button "Dismiss" [ref=e479] [cursor=pointer]
+            - generic [ref=e480]:
+              - generic [ref=e481]:
+                - generic [ref=e482]:
+                  - generic [ref=e483]: medium
+                  - generic [ref=e484]: 03:46:44
+                - paragraph [ref=e485]: Harsh braking event detected
+              - generic [ref=e486]:
+                - button "Truck 04" [ref=e487] [cursor=pointer]:
+                  - img [ref=e488]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e490] [cursor=pointer]
+                - button "Dismiss" [ref=e491] [cursor=pointer]
+            - generic [ref=e492]:
+              - generic [ref=e493]:
+                - generic [ref=e494]:
+                  - generic [ref=e495]: medium
+                  - generic [ref=e496]: 03:46:02
+                - paragraph [ref=e497]: Harsh braking event detected
+              - generic [ref=e498]:
+                - button "Truck 04" [ref=e499] [cursor=pointer]:
+                  - img [ref=e500]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e502] [cursor=pointer]
+                - button "Dismiss" [ref=e503] [cursor=pointer]
+            - generic [ref=e504]:
+              - generic [ref=e505]:
+                - generic [ref=e506]:
+                  - generic [ref=e507]: medium
+                  - generic [ref=e508]: 03:45:40
+                - paragraph [ref=e509]: Tire pressure warning — front left
+              - generic [ref=e510]:
+                - button "Truck 03" [ref=e511] [cursor=pointer]:
+                  - img [ref=e512]
+                  - text: Truck 03
+                - button "Mark as read" [ref=e514] [cursor=pointer]
+                - button "Dismiss" [ref=e515] [cursor=pointer]
+            - generic [ref=e516]:
+              - generic [ref=e517]:
+                - generic [ref=e518]:
+                  - generic [ref=e519]: low
+                  - generic [ref=e520]: 03:45:14
+                - paragraph [ref=e521]: Speed limit exceeded on urban road
+              - generic [ref=e522]:
+                - button "Truck 04" [ref=e523] [cursor=pointer]:
+                  - img [ref=e524]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e526] [cursor=pointer]
+                - button "Dismiss" [ref=e527] [cursor=pointer]
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e530]:
+                  - generic [ref=e531]: low
+                  - generic [ref=e532]: 03:45:02
+                - paragraph [ref=e533]: Route deviation — not on assigned path
+              - generic [ref=e534]:
+                - button "Truck 04" [ref=e535] [cursor=pointer]:
+                  - img [ref=e536]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e538] [cursor=pointer]
+                - button "Dismiss" [ref=e539] [cursor=pointer]
+            - generic [ref=e540]:
+              - generic [ref=e541]:
+                - generic [ref=e542]:
+                  - generic [ref=e543]: low
+                  - generic [ref=e544]: 03:44:53
+                - paragraph [ref=e545]: Route deviation — not on assigned path
+              - generic [ref=e546]:
+                - button "Truck 04" [ref=e547] [cursor=pointer]:
+                  - img [ref=e548]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e550] [cursor=pointer]
+                - button "Dismiss" [ref=e551] [cursor=pointer]
+            - generic [ref=e552]:
+              - generic [ref=e553]:
+                - generic [ref=e554]:
+                  - generic [ref=e555]: medium
+                  - generic [ref=e556]: 03:44:18
+                - paragraph [ref=e557]: Driver break overdue (4h continuous driving)
+              - generic [ref=e558]:
+                - button "Truck 05" [ref=e559] [cursor=pointer]:
+                  - img [ref=e560]
+                  - text: Truck 05
+                - button "Mark as read" [ref=e562] [cursor=pointer]
+                - button "Dismiss" [ref=e563] [cursor=pointer]
+            - generic [ref=e564]:
+              - generic [ref=e565]:
+                - generic [ref=e566]:
+                  - generic [ref=e567]: critical
+                  - generic [ref=e568]: 03:44:02
+                - paragraph [ref=e569]: No driver activity detected — possible abandonment
+              - generic [ref=e570]:
+                - button "Truck 08" [ref=e571] [cursor=pointer]:
+                  - img [ref=e572]
+                  - text: Truck 08
+                - button "Mark as read" [ref=e574] [cursor=pointer]
+                - button "Dismiss" [ref=e575] [cursor=pointer]
+            - generic [ref=e576]:
+              - generic [ref=e577]:
+                - generic [ref=e578]:
+                  - generic [ref=e579]: medium
+                  - generic [ref=e580]: 03:43:48
+                - paragraph [ref=e581]: Vehicle entered restricted zone
+              - generic [ref=e582]:
+                - button "Truck 06" [ref=e583] [cursor=pointer]:
+                  - img [ref=e584]
+                  - text: Truck 06
+                - button "Mark as read" [ref=e586] [cursor=pointer]
+                - button "Dismiss" [ref=e587] [cursor=pointer]
+            - generic [ref=e588]:
+              - generic [ref=e589]:
+                - generic [ref=e590]:
+                  - generic [ref=e591]: low
+                  - generic [ref=e592]: 03:43:31
+                - paragraph [ref=e593]: Engine RPM above normal range
+              - generic [ref=e594]:
+                - button "Truck 04" [ref=e595] [cursor=pointer]:
+                  - img [ref=e596]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e598] [cursor=pointer]
+                - button "Dismiss" [ref=e599] [cursor=pointer]
+            - generic [ref=e600]:
+              - generic [ref=e601]:
+                - generic [ref=e602]:
+                  - generic [ref=e603]: critical
+                  - generic [ref=e604]: 03:43:07
+                - paragraph [ref=e605]: Collision detected — vehicle unresponsive
+              - generic [ref=e606]:
+                - button "Truck 01" [ref=e607] [cursor=pointer]:
+                  - img [ref=e608]
+                  - text: Truck 01
+                - button "Mark as read" [ref=e610] [cursor=pointer]
+                - button "Dismiss" [ref=e611] [cursor=pointer]
+            - generic [ref=e612]:
+              - generic [ref=e613]:
+                - generic [ref=e614]:
+                  - generic [ref=e615]: low
+                  - generic [ref=e616]: 03:41:35
+                - paragraph [ref=e617]: Engine RPM above normal range
+              - generic [ref=e618]:
+                - button "Truck 04" [ref=e619] [cursor=pointer]:
+                  - img [ref=e620]
+                  - text: Truck 04
+                - button "Mark as read" [ref=e622] [cursor=pointer]
+                - button "Dismiss" [ref=e623] [cursor=pointer]
+            - generic [ref=e624]:
+              - generic [ref=e625]:
+                - generic [ref=e626]:
+                  - generic [ref=e627]: medium
+                  - generic [ref=e628]: 03:40:14
+                - paragraph [ref=e629]: Harsh braking event detected
+              - generic [ref=e630]:
+                - button "Truck 07" [ref=e631] [cursor=pointer]:
+                  - img [ref=e632]
+                  - text: Truck 07
+                - button "Mark as read" [ref=e634] [cursor=pointer]
+                - button "Dismiss" [ref=e635] [cursor=pointer]

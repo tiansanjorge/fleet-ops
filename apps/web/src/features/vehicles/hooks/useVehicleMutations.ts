@@ -1,6 +1,9 @@
 import { useAlertStore } from "@/features/alerts/store/alertStore";
 import { useVehicleStore } from "../store/vehicleStore";
+import { apiFetch } from "@/core/api/client";
 import type { Vehicle } from "@fleetops/types";
+
+const IS_MOCK = process.env.NEXT_PUBLIC_API_MOCK === "true";
 
 export type VehicleFormData = {
   label: string;
@@ -24,14 +27,17 @@ export function useVehicleMutations() {
       status: "stopped",
       position: FLEETOPS_HQ,
     };
-    const res = await fetch("/vehicles", {
+    const res = await apiFetch("/vehicles", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error("Failed to create vehicle");
     const created: Vehicle = await res.json();
-    addVehicle(created);
+    // En modo mock no hay socket, así que el REST agrega el vehículo.
+    // En modo real el servidor emite vehicle:created → socketClient llama addVehicle.
+    // Agregar desde ambos lados produce duplicado de key en React.
+    if (IS_MOCK) addVehicle(created);
     bootVehicle(created.id);
   }
 
@@ -43,7 +49,7 @@ export function useVehicleMutations() {
       ...vehicle,
       label: data.label.trim(),
     };
-    const res = await fetch(`/vehicles/${vehicle.id}`, {
+    const res = await apiFetch(`/vehicles/${vehicle.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -54,7 +60,7 @@ export function useVehicleMutations() {
   }
 
   async function deleteVehicle(id: string): Promise<void> {
-    const res = await fetch(`/vehicles/${id}`, { method: "DELETE" });
+    const res = await apiFetch(`/vehicles/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete vehicle");
     removeVehicle(id);
     removeAlertsByVehicle(id);

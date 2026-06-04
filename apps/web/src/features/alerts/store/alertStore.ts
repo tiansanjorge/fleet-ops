@@ -81,6 +81,7 @@ let _lastAlertAt = 0;
 interface AlertStore {
   alerts: Alert[];
   setAlerts: (alerts: Alert[]) => void;
+  addAlert: (alert: Alert) => void;
   markAsRead: (id: string) => void;
   markAsUnread: (id: string) => void;
   dismissAlert: (id: string) => void;
@@ -93,6 +94,9 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
   alerts: [],
 
   setAlerts: (alerts) => set({ alerts }),
+
+  addAlert: (alert) =>
+    set((state) => ({ alerts: [alert, ...state.alerts] })),
 
   markAsRead: (id) =>
     set((state) => ({

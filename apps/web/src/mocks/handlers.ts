@@ -45,7 +45,7 @@ export const handlers = [
     return HttpResponse.json(db.users);
   }),
 
-  http.patch("/users/:id", async ({ params, request }) => {
+  http.patch("/users/:id/role", async ({ params, request }) => {
     const { id } = params as { id: string };
     const body = (await request.json()) as { role: UserRole };
     const index = db.users.findIndex((u) => u.id === id);

@@ -92,6 +92,7 @@ interface VehicleStore {
   bootVehicle: (vehicleId: string) => void;
   addVehicle: (vehicle: Vehicle) => void;
   updateVehicle: (updated: Vehicle) => void;
+  patchVehicle: (id: string, patch: Partial<Omit<Vehicle, "id">>) => void;
   removeVehicle: (id: string) => void;
 }
 
@@ -122,6 +123,11 @@ export const useVehicleStore = create<VehicleStore>((set) => ({
   updateVehicle: (updated) =>
     set((state) => ({
       vehicles: state.vehicles.map((v) => (v.id === updated.id ? updated : v)),
+    })),
+
+  patchVehicle: (id, patch) =>
+    set((state) => ({
+      vehicles: state.vehicles.map((v) => (v.id === id ? { ...v, ...patch } : v)),
     })),
 
   removeVehicle: (id) =>
