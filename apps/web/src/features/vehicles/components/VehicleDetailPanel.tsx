@@ -6,6 +6,7 @@ import { useVehicleStore } from "../store/vehicleStore";
 import { useVehicleMutations } from "../hooks/useVehicleMutations";
 import { useNeighborhood } from "../hooks/useNeighborhood";
 import type { Vehicle } from "@fleetops/types";
+import Image from "next/image";
 import { usePermission } from "@/core/permissions/usePermission";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
@@ -69,6 +70,13 @@ function Panel({ vehicle, onClose }: Props) {
         </div>
 
         <div className="px-4 pb-4 flex flex-col gap-4">
+          <Image
+            src="/truck.webp"
+            alt="Vehicle"
+            width={120}
+            height={80}
+            className="rounded-md object-cover w-full"
+          />
           <Badge variant={vehicle.status} />
 
           <div className="flex flex-col gap-3">

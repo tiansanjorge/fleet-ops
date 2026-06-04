@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import type { Vehicle } from "@fleetops/types";
 import {
   useVehicleMutations,
@@ -23,12 +24,6 @@ export function VehicleFormModal({ vehicle, onClose }: Props) {
   const [label, setLabel] = useState(vehicle?.label ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLabel(vehicle?.label ?? "");
-    setError(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicle?.id]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,9 +65,15 @@ export function VehicleFormModal({ vehicle, onClose }: Props) {
       }}
     >
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg">
-        <h2 className="mb-5 text-base font-medium text-foreground">
+        <h2 className="mb-4 text-base font-medium text-foreground">
           {isEdit ? "Edit vehicle" : "Add vehicle"}
         </h2>
+
+        {!isEdit && (
+          <div className="mb-4 flex justify-center">
+            <Image src="/truck-marker.webp" alt="" width={120} height={120} className="object-contain" />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">

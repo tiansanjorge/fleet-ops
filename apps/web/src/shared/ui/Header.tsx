@@ -10,7 +10,7 @@ import { UserList } from "@/features/users/components/UserList";
 import { ThemeToggle } from "@/shared/ui/ThemeToggle";
 
 const roleInitialColors: Record<string, { bg: string; text: string }> = {
-  admin: { bg: "bg-red-500", text: "text-white" },
+  admin: { bg: "bg-red-900", text: "text-white" },
   operator: { bg: "bg-blue-900", text: "text-white" },
   viewer: { bg: "bg-zinc-500", text: "text-white" },
 };
@@ -143,7 +143,7 @@ export function Header() {
       {avatarMenuOpen && currentUser && (
         <div
           ref={dropdownRef}
-          className="fixed top-14 right-6 z-1001 w-48 rounded-lg border border-border bg-card py-1"
+          className="fixed top-14 right-2.25 z-1001 w-48 rounded-b-lg border border-border bg-card py-1"
         >
           <div className="px-3 py-2 border-b border-border/50">
             <p className="text-xs font-medium text-foreground truncate">

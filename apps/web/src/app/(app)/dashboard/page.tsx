@@ -20,14 +20,15 @@ export default function Dashboard() {
     (state) => state.alerts.filter((a) => !a.read && !a.dismissed).length,
   );
   const currentUser = useAuthStore((state) => state.currentUser);
+  const hydrated = useAuthStore((state) => state.hydrated);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (hydrated && !currentUser) {
       router.replace("/");
     }
-  }, [currentUser, router]);
+  }, [hydrated, currentUser, router]);
 
-  if (!currentUser) return null;
+  if (!hydrated || !currentUser) return null;
 
   return (
     <div className="relative h-full overflow-hidden">
@@ -36,7 +37,7 @@ export default function Dashboard() {
 
       {/* Overlay panel — full-screen on mobile, floating panel on desktop */}
       {panelOpen && (
-        <div className="absolute inset-4 md:inset-auto md:top-4 md:right-4 z-1000 md:w-80 md:h-[calc(100vh-2rem)] flex flex-col">
+        <div className="absolute inset-4 md:inset-auto md:top-4 md:right-4 z-1000 md:w-100 md:h-[calc(100vh-2rem)] flex flex-col">
           <AlertList onClose={() => setPanelOpen(false)} />
         </div>
       )}

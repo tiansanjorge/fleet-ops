@@ -15,7 +15,7 @@ export const vehicleSchema = z.object({
 export const createVehicleSchema = z.object({
   label: z.string().min(1),
   position: positionSchema,
-  status: vehicleStatusSchema.default("idle"),
+  status: vehicleStatusSchema.default("moving"),
 });
 
 export const updateVehicleSchema = createVehicleSchema.partial();

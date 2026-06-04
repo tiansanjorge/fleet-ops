@@ -24,40 +24,31 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
 const hqIcon = createHQIcon();
 
 function createHQIcon(): L.DivIcon {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-      <rect x="2" y="2" width="28" height="28" rx="6" fill="#ffa500" stroke="#1a7bea" stroke-width="2"/>
-      <path d="M16 8 L26 17 L23 17 L23 25 L19 25 L19 20 L13 20 L13 25 L9 25 L9 17 L6 17 Z"
-        fill="#0453ae"/>
-
-        
-    </svg>
-  `;
   return L.divIcon({
-    html: svg,
+    html: `<img src="/favicon.webp" style="width:36px;height:36px;display:block;object-fit:contain;cursor:grab;" />`,
     className: "",
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16],
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -18],
   });
 }
 
 function createStatusIcon(status: VehicleStatus, selected = false): L.DivIcon {
   const color = STATUS_COLOR[status];
-  const [w, h] = selected ? [36, 46] : [28, 36];
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 28 36">
-      <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 22 14 22S28 23.333 28 14C28 6.268 21.732 0 14 0z"
-        fill="${color}" stroke="white" stroke-width="2"/>
-      <circle cx="14" cy="14" r="5" fill="white"/>
-    </svg>
-  `;
+  const size = selected ? 56 : 48;
+  const badgeSize = selected ? 14 : 12;
+  const html = `
+    <div style="position:relative;width:${size}px;height:${size}px;">
+      <img src="/truck-marker.webp" style="width:${size}px;height:${size}px;display:block;object-fit:contain;" />
+      <span style="position:absolute;bottom:10px;right:10px;width:${badgeSize}px;height:${badgeSize}px;border-radius:50%;background:${color};border:2px solid white;box-sizing:border-box;z-index:1000;"></span>
+    </div>
+  `.trim();
   return L.divIcon({
-    html: svg,
+    html,
     className: "",
-    iconSize: [w, h],
-    iconAnchor: [w / 2, h],
-    popupAnchor: [0, -h],
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
   });
 }
 
@@ -146,20 +137,13 @@ export default function Map() {
         <button
           onClick={() => setAddOpen(true)}
           aria-label="Add vehicle"
-          className="absolute bottom-6 left-6 z-1000 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-md border border-border/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-card/95 transition-colors duration-150 cursor-pointer"
+          className="absolute bottom-6 left-6 z-1000 flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-md border border-border/50 px-4  text-sm font-medium text-foreground hover:bg-card/95 transition-colors duration-150 cursor-pointer"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="7" y1="1" x2="7" y2="13" />
-            <line x1="1" y1="7" x2="13" y2="7" />
-          </svg>
+          <img
+            src="/truck-marker.webp"
+            alt=""
+            style={{ width: 50, height: 50, objectFit: "contain" }}
+          />
           Add vehicle
         </button>
       )}

@@ -23,25 +23,11 @@ const STATUS_TRANSITIONS: Record<
 // Tracks vehicles under a forced status override: vehicleId → expiry timestamp
 const _forcedStops = new Map<string, number>();
 
-// Tracks newly created vehicles in boot sequence: vehicleId → createdAt timestamp
-// Phase 1: 0–5s  → stopped (parked at HQ)
-// Phase 2: 5–10s → idle    (engine on, about to depart)
-// Phase 3: 10s+  → normal simulation
-const _bootSequence = new Map<string, number>();
-
 function nextStatus(current: VehicleStatus, vehicleId: string): VehicleStatus {
-  const bootedAt = _bootSequence.get(vehicleId);
-  if (bootedAt !== undefined) {
-    const elapsed = Date.now() - bootedAt;
-    if (elapsed < 5_000) return "stopped";
-    if (elapsed < 10_000) return "idle";
-    _bootSequence.delete(vehicleId); // boot complete — dispatch immediately
-    return "moving";
-  }
   const forcedUntil = _forcedStops.get(vehicleId);
   if (forcedUntil !== undefined) {
     if (Date.now() < forcedUntil) return "stopped";
-    _forcedStops.delete(vehicleId); // expired, resume normal transitions
+    _forcedStops.delete(vehicleId);
   }
   for (const { next, chance } of STATUS_TRANSITIONS[current]) {
     if (Math.random() < chance) return next;
@@ -89,7 +75,6 @@ interface VehicleStore {
   updatePositions: () => void;
   selectVehicle: (id: string | null) => void;
   forceStop: (vehicleId: string, durationMs: number) => void;
-  bootVehicle: (vehicleId: string) => void;
   addVehicle: (vehicle: Vehicle) => void;
   updateVehicle: (updated: Vehicle) => void;
   patchVehicle: (id: string, patch: Partial<Omit<Vehicle, "id">>) => void;
@@ -111,10 +96,6 @@ export const useVehicleStore = create<VehicleStore>((set) => ({
         v.id === vehicleId ? { ...v, status: "stopped" } : v,
       ),
     }));
-  },
-
-  bootVehicle: (vehicleId) => {
-    _bootSequence.set(vehicleId, Date.now());
   },
 
   addVehicle: (vehicle) =>

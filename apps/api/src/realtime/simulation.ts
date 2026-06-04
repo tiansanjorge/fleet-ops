@@ -9,6 +9,13 @@ import { EVENTS } from "./events.js";
 
 const TICK_MS = 1500;
 
+const BOUNDS = {
+  norte: -34.535887,
+  sur:   -34.625431,
+  oeste: -58.520821,
+  este:  -58.382784,
+};
+
 // --- Movimiento (basado en rumbo) ---
 // ~0.00008 deg/tick ≈ 8m a 1.5s ≈ ~19 km/h
 const SPEED = 0.00008;
@@ -44,45 +51,60 @@ const ALERT_CATALOG: Record<VehicleStatus, AlertTemplate[]> = {
   moving: [
     { message: "Speed limit exceeded on urban road", severity: "low" },
     { message: "Route deviation — not on assigned path", severity: "low" },
-    {
-      message: "Driver break overdue (4h continuous driving)",
-      severity: "medium",
-    },
+    { message: "Driver break overdue (4h continuous driving)", severity: "medium" },
     { message: "Harsh braking event detected", severity: "medium" },
     { message: "Vehicle entered restricted zone", severity: "medium" },
-    {
-      message: "Sudden swerve detected — possible collision risk",
-      severity: "critical",
-    },
-    {
-      message: "Collision detected — vehicle unresponsive",
-      severity: "critical",
-      forceStop: true,
-    },
+    { message: "Sudden swerve detected — possible collision risk", severity: "critical" },
+    { message: "Collision detected — vehicle unresponsive", severity: "critical", forceStop: true },
     { message: "Engine RPM above normal range", severity: "low" },
     { message: "Tire pressure warning — front left", severity: "medium" },
+    { message: "Sharp turn at intersection — excessive speed", severity: "low" },
+    { message: "Fuel consumption spike detected", severity: "low" },
+    { message: "Driver seatbelt unfastened while moving", severity: "medium" },
+    { message: "GPS signal degraded — position may be inaccurate", severity: "low" },
+    { message: "Vehicle approaching school zone over speed limit", severity: "medium" },
+    { message: "Windshield wiper fault — low visibility conditions", severity: "low" },
+    { message: "Rear door sensor triggered while in motion", severity: "medium" },
+    { message: "Rapid acceleration detected in residential area", severity: "low" },
+    { message: "Wrong-way detection alert — check route", severity: "critical", forceStop: true },
+    { message: "Engine oil pressure below minimum threshold", severity: "medium" },
+    { message: "Cargo weight sensor reading unstable", severity: "low" },
   ],
   idle: [
     { message: "Idle time exceeding delivery window", severity: "medium" },
-    {
-      message: "Driver not checked in after scheduled stop",
-      severity: "medium",
-    },
+    { message: "Driver not checked in after scheduled stop", severity: "medium" },
     { message: "Scheduled maintenance overdue", severity: "low" },
     { message: "Low fuel — less than 15% remaining", severity: "medium" },
     { message: "Engine temperature high while idle", severity: "critical" },
+    { message: "AC system running continuously — fuel waste risk", severity: "low" },
+    { message: "Delivery confirmation pending for 10+ minutes", severity: "medium" },
+    { message: "Driver phone activity detected while engine running", severity: "low" },
+    { message: "Vehicle idle in restricted loading zone", severity: "medium" },
+    { message: "Battery charging level below 20%", severity: "medium" },
+    { message: "No delivery scan recorded at this stop", severity: "low" },
+    { message: "Coolant level low — check reservoir", severity: "medium" },
+    { message: "Driver door open in active traffic area", severity: "medium" },
+    { message: "Idle duration exceeded 15 minutes — route delay likely", severity: "low" },
+    { message: "Transmission fluid temperature warning", severity: "medium" },
+    { message: "Smoke detected near engine compartment", severity: "critical" },
   ],
   stopped: [
     { message: "Unscheduled stop — not on delivery route", severity: "low" },
     { message: "Stop duration exceeds allowed threshold", severity: "medium" },
     { message: "Vehicle stopped in no-parking zone", severity: "medium" },
-    { message: "Emergency stop activated by driver", severity: "critical" },
-    {
-      message: "No driver activity detected — possible abandonment",
-      severity: "critical",
-    },
+    { message: "Emergency stop activated by driver", severity: "critical", forceStop: true },
+    { message: "No driver activity detected — possible abandonment", severity: "critical" },
     { message: "Cargo door open at unregistered location", severity: "medium" },
     { message: "Battery voltage drop detected", severity: "low" },
+    { message: "Vehicle parked blocking emergency access lane", severity: "medium" },
+    { message: "Engine left running during extended stop", severity: "low" },
+    { message: "Cargo temperature out of range at delivery point", severity: "medium" },
+    { message: "Driver panic button triggered", severity: "critical", forceStop: true },
+    { message: "Odometer mismatch — possible unauthorized use", severity: "medium" },
+    { message: "Stop location does not match scheduled delivery address", severity: "low" },
+    { message: "Trailer coupling sensor disconnected", severity: "medium" },
+    { message: "Brake fluid warning light active", severity: "medium" },
+    { message: "Vehicle tilt detected — possible accident or theft", severity: "critical" },
   ],
 };
 
@@ -186,9 +208,16 @@ export function startSimulation(app: FastifyInstance): () => void {
         const status = nextStatus(v.status, v.id);
 
         if (status === "moving") {
-          const heading = nextHeading(v.id);
-          const lat = v.lat + Math.cos(heading) * SPEED;
-          const lng = v.lng + Math.sin(heading) * SPEED;
+          let heading = nextHeading(v.id);
+          let lat = v.lat + Math.cos(heading) * SPEED;
+          let lng = v.lng + Math.sin(heading) * SPEED;
+
+          if (lat < BOUNDS.sur || lat > BOUNDS.norte) heading = Math.PI - heading;
+          if (lng < BOUNDS.oeste || lng > BOUNDS.este) heading = -heading;
+          lat = Math.max(BOUNDS.sur, Math.min(BOUNDS.norte, lat));
+          lng = Math.max(BOUNDS.oeste, Math.min(BOUNDS.este, lng));
+          headings.set(v.id, heading);
+
           await app.prisma.vehicle.update({
             where: { id: v.id },
             data: { lat, lng, status },

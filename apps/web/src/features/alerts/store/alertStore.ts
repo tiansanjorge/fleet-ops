@@ -96,7 +96,10 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
   setAlerts: (alerts) => set({ alerts }),
 
   addAlert: (alert) =>
-    set((state) => ({ alerts: [alert, ...state.alerts] })),
+    set((state) => {
+      if (state.alerts.some((a) => a.id === alert.id)) return state;
+      return { alerts: [alert, ...state.alerts] };
+    }),
 
   markAsRead: (id) =>
     set((state) => ({

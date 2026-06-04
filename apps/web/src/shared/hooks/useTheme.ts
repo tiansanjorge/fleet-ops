@@ -7,21 +7,17 @@ type Theme = "dark" | "light";
 const STORAGE_KEY = "fleetops-theme";
 
 export function useTheme() {
-  // Always initialize with "dark" to match the server render.
-  // The inline script in layout.tsx already applies the correct class before paint.
   const [theme, setTheme] = useState<Theme>("dark");
 
-  // After mount, sync state with whatever the inline script already applied.
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored === "dark" || stored === "light") {
-      setTheme(stored);
-      return;
-    }
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    setTheme(prefersDark ? "dark" : "light");
+    const resolved =
+      stored === "dark" || stored === "light"
+        ? stored
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    setTheme(resolved);
   }, []);
 
   useEffect(() => {

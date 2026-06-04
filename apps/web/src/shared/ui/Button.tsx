@@ -14,7 +14,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary:
     "bg-foreground text-background hover:bg-zinc-700 dark:hover:bg-zinc-300",
   danger:
-    "bg-red-500/10 text-red-500 hover:bg-red-500/20 dark:bg-red-500/15 dark:text-red-400 dark:hover:bg-red-500/25",
+    "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-300 dark:hover:bg-red-900/70",
   ghost: "bg-transparent text-muted hover:bg-zinc-100 dark:hover:bg-zinc-800",
 };
 

@@ -9,14 +9,12 @@ export type VehicleFormData = {
   label: string;
 };
 
-// FleetOps HQ — vehicles are registered here before being dispatched
 export const FLEETOPS_HQ: [number, number] = [-34.6062, -58.4788]; // Seguí y Añasco, La Paternal, CABA
 
 export function useVehicleMutations() {
   const addVehicle = useVehicleStore((state) => state.addVehicle);
   const updateVehicle = useVehicleStore((state) => state.updateVehicle);
   const removeVehicle = useVehicleStore((state) => state.removeVehicle);
-  const bootVehicle = useVehicleStore((state) => state.bootVehicle);
   const removeAlertsByVehicle = useAlertStore(
     (state) => state.removeAlertsByVehicle,
   );
@@ -24,7 +22,7 @@ export function useVehicleMutations() {
   async function createVehicle(data: VehicleFormData): Promise<void> {
     const payload: Omit<Vehicle, "id"> = {
       label: data.label.trim(),
-      status: "stopped",
+      status: "moving",
       position: FLEETOPS_HQ,
     };
     const res = await apiFetch("/vehicles", {
@@ -38,7 +36,6 @@ export function useVehicleMutations() {
     // En modo real el servidor emite vehicle:created → socketClient llama addVehicle.
     // Agregar desde ambos lados produce duplicado de key en React.
     if (IS_MOCK) addVehicle(created);
-    bootVehicle(created.id);
   }
 
   async function editVehicle(

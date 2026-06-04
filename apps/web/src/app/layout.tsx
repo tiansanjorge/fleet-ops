@@ -35,6 +35,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <head>
+        <link rel="icon" href="/favicon.webp" type="image/webp" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="h-screen bg-background text-foreground">
