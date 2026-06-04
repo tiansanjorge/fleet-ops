@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import type { Vehicle } from "@fleetops/types";
 import {
   useVehicleMutations,
@@ -58,13 +59,23 @@ export function VehicleFormModal({ vehicle, onClose }: Props) {
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
+      transition={{ duration: 0.15 }}
       className="fixed inset-0 z-2000 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15, ease: "easeIn" } }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg"
+      >
         <h2 className="mb-4 text-base font-medium text-foreground">
           {isEdit ? "Edit vehicle" : "Add vehicle"}
         </h2>
@@ -101,7 +112,7 @@ export function VehicleFormModal({ vehicle, onClose }: Props) {
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

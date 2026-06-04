@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { loginBodySchema, loginResponseSchema } from "./schemas.js";
 import { userSchema } from "../users/schemas.js";
@@ -29,6 +30,21 @@ export default async function authRoutes(app: FastifyInstance) {
       const sessionUser = { id: user.id, name: user.name, role: user.role };
       const token = app.jwt.sign(sessionUser);
       return { token, user: sessionUser };
+    },
+  );
+
+  r.get(
+    "/demo-users",
+    {
+      schema: {
+        response: { 200: z.array(userSchema) },
+      },
+    },
+    async () => {
+      return app.prisma.user.findMany({
+        select: { id: true, name: true, role: true },
+        orderBy: { name: "asc" },
+      });
     },
   );
 

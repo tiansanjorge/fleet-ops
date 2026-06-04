@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { AnimatePresence, motion } from "framer-motion";
 import AlertList from "@/features/alerts/components/AlertList";
 import { useAlerts } from "@/features/alerts/hooks/useAlerts";
 import { useAlertStore } from "@/features/alerts/store/alertStore";
@@ -36,11 +37,20 @@ export default function Dashboard() {
       <Map />
 
       {/* Overlay panel — full-screen on mobile, floating panel on desktop */}
-      {panelOpen && (
-        <div className="absolute inset-4 md:inset-auto md:top-4 md:right-4 z-1000 md:w-100 md:h-[calc(100vh-2rem)] flex flex-col">
-          <AlertList onClose={() => setPanelOpen(false)} />
-        </div>
-      )}
+      <AnimatePresence>
+        {panelOpen && (
+          <motion.div
+            key="alerts-panel"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50, transition: { duration: 0.15, ease: "easeIn" } }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-4 md:inset-auto md:top-4 md:right-4 z-1000 md:w-100 md:h-[calc(100vh-2rem)] flex flex-col"
+          >
+            <AlertList onClose={() => setPanelOpen(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating bell button — visible only when panel is closed */}
       {!panelOpen && (

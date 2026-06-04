@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAlertStore } from "../store/alertStore";
 import type { AlertSeverity } from "@fleetops/types";
 import { usePermission } from "@/core/permissions/usePermission";
@@ -122,13 +123,23 @@ export default function AlertList({ onClose }: AlertListProps) {
                 onScroll={checkScroll}
                 className="h-full overflow-y-auto space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-thumb:hover]:bg-zinc-500 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-400"
               >
-                {filtered.map((alert) => (
-                  <AlertItem
-                    key={alert.id}
-                    alert={alert}
-                    showDismiss={tab === "active" && can("dismiss:alert")}
-                  />
-                ))}
+                <AnimatePresence mode="popLayout" initial={true}>
+                  {filtered.map((alert, i) => (
+                    <motion.div
+                      key={alert.id}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8, transition: { duration: 0.12, ease: "easeIn" } }}
+                      transition={{ duration: 0.2, ease: "easeOut", delay: Math.min(i * 0.04, 0.3) }}
+                      layout
+                    >
+                      <AlertItem
+                        alert={alert}
+                        showDismiss={tab === "active" && can("dismiss:alert")}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </div>
           )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, memo } from "react";
+import { AnimatePresence } from "framer-motion";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -25,7 +26,7 @@ const hqIcon = createHQIcon();
 
 function createHQIcon(): L.DivIcon {
   return L.divIcon({
-    html: `<img src="/favicon.webp" style="width:36px;height:36px;display:block;object-fit:contain;cursor:grab;" />`,
+    html: `<img src="/favicon.webp" style="width:46px;height:46px;display:block;object-fit:contain;cursor:grab;" />`,
     className: "",
     iconSize: [36, 36],
     iconAnchor: [18, 18],
@@ -148,7 +149,9 @@ export default function Map() {
         </button>
       )}
 
-      {addOpen && <VehicleFormModal onClose={() => setAddOpen(false)} />}
+      <AnimatePresence>
+        {addOpen && <VehicleFormModal onClose={() => setAddOpen(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

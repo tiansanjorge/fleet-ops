@@ -4,20 +4,65 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const vehicles = [
-  { label: "Truck 01", lat: -34.615, lng: -58.43, status: VehicleStatus.moving },
+  {
+    label: "Truck 01",
+    lat: -34.615,
+    lng: -58.43,
+    status: VehicleStatus.moving,
+  },
   { label: "Truck 02", lat: -34.619, lng: -58.447, status: VehicleStatus.idle },
-  { label: "Truck 03", lat: -34.589, lng: -58.426, status: VehicleStatus.stopped },
-  { label: "Truck 04", lat: -34.563, lng: -58.455, status: VehicleStatus.moving },
-  { label: "Truck 05", lat: -34.572, lng: -58.479, status: VehicleStatus.moving },
+  {
+    label: "Truck 03",
+    lat: -34.589,
+    lng: -58.426,
+    status: VehicleStatus.stopped,
+  },
+  {
+    label: "Truck 04",
+    lat: -34.58,
+    lng: -58.455,
+    status: VehicleStatus.moving,
+  },
+  {
+    label: "Truck 05",
+    lat: -34.572,
+    lng: -58.479,
+    status: VehicleStatus.moving,
+  },
   { label: "Truck 06", lat: -34.599, lng: -58.502, status: VehicleStatus.idle },
-  { label: "Truck 07", lat: -34.601, lng: -58.441, status: VehicleStatus.moving },
-  { label: "Truck 08", lat: -34.631, lng: -58.462, status: VehicleStatus.stopped },
+  {
+    label: "Truck 07",
+    lat: -34.601,
+    lng: -58.441,
+    status: VehicleStatus.moving,
+  },
+  {
+    label: "Truck 08",
+    lat: -34.62,
+    lng: -58.462,
+    status: VehicleStatus.stopped,
+  },
 ];
 
 const seedUsers = [
-  { name: "Ana García",    email: "anagarcia@fleetops.com",    role: UserRole.admin,    password: "admin123" },
-  { name: "Carlos Méndez", email: "carlosmendez@fleetops.com", role: UserRole.operator, password: "password" },
-  { name: "Laura Ríos",    email: "laurarios@fleetops.com",    role: UserRole.viewer,   password: "password" },
+  {
+    name: "Ana García",
+    email: "anagarcia@fleetops.com",
+    role: UserRole.admin,
+    password: "admin123",
+  },
+  {
+    name: "Carlos Méndez",
+    email: "carlosmendez@fleetops.com",
+    role: UserRole.operator,
+    password: "password",
+  },
+  {
+    name: "Laura Ríos",
+    email: "laurarios@fleetops.com",
+    role: UserRole.viewer,
+    password: "password",
+  },
 ];
 
 async function main() {
@@ -35,7 +80,9 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${vehicles.length} vehicles and ${seedUsers.length} users`);
+  console.log(
+    `Seeded ${vehicles.length} vehicles and ${seedUsers.length} users`,
+  );
 }
 
 main()

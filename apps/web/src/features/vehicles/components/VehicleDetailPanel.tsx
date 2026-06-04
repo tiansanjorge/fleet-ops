@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useVehicleStore } from "../store/vehicleStore";
 import { useVehicleMutations } from "../hooks/useVehicleMutations";
 import { useNeighborhood } from "../hooks/useNeighborhood";
@@ -64,7 +65,13 @@ function Panel({ vehicle, onClose }: Props) {
 
   return (
     <>
-      <div className="absolute top-4 left-4 z-1000 w-[calc(100vw-2rem)] md:w-72 overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md">
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 40, transition: { duration: 0.15, ease: "easeIn" } }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="absolute top-4 left-4 z-1000 w-[calc(100vw-2rem)] md:w-72 overflow-hidden rounded-lg border border-border/50 bg-card/70 backdrop-blur-md"
+      >
         <div className="px-4 py-3">
           <PanelHeader title={vehicle.label} onClose={onClose} />
         </div>
@@ -116,52 +123,66 @@ function Panel({ vehicle, onClose }: Props) {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      {editOpen && (
-        <VehicleFormModal
-          vehicle={vehicle}
-          onClose={() => setEditOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {editOpen && (
+          <VehicleFormModal
+            vehicle={vehicle}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {confirmOpen && (
-        <div
-          className="fixed inset-0 z-2000 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setConfirmOpen(false);
-          }}
-        >
-          <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6">
-            <h2 className="text-base font-medium text-foreground">
-              Delete vehicle
-            </h2>
-            <p className="mt-2 text-sm text-muted">
-              Are you sure you want to delete{" "}
-              <span className="font-medium text-foreground">
-                {vehicle.label}
-              </span>
-              ? This action is irreversible.
-            </p>
-            <div className="mt-5 flex justify-end gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setConfirmOpen(false)}
-                disabled={deleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleDelete}
-                disabled={deleting}
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {confirmOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-2000 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setConfirmOpen(false);
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15, ease: "easeIn" } }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full max-w-sm rounded-xl border border-border bg-card p-6"
+            >
+              <h2 className="text-base font-medium text-foreground">
+                Delete vehicle
+              </h2>
+              <p className="mt-2 text-sm text-muted">
+                Are you sure you want to delete{" "}
+                <span className="font-medium text-foreground">
+                  {vehicle.label}
+                </span>
+                ? This action is irreversible.
+              </p>
+              <div className="mt-5 flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setConfirmOpen(false)}
+                  disabled={deleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "Deleting…" : "Delete"}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -173,7 +194,11 @@ export default function VehicleDetailPanel() {
 
   const vehicle = vehicles.find((v) => v.id === selectedId) ?? null;
 
-  if (!vehicle) return null;
-
-  return <Panel vehicle={vehicle} onClose={() => selectVehicle(null)} />;
+  return (
+    <AnimatePresence>
+      {vehicle && (
+        <Panel key={vehicle.id} vehicle={vehicle} onClose={() => selectVehicle(null)} />
+      )}
+    </AnimatePresence>
+  );
 }

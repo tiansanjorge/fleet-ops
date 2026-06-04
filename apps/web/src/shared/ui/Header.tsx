@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/core/auth/authStore";
@@ -140,63 +141,80 @@ export function Header() {
 
       {/* Avatar dropdown — fixed to avoid backdrop-blur stacking context */}
       {/* onMouseDown stopPropagation prevents the document mousedown listener from unmounting this before onClick fires */}
-      {avatarMenuOpen && currentUser && (
-        <div
-          ref={dropdownRef}
-          className="fixed top-14 right-2.25 z-1001 w-48 rounded-b-lg border border-border bg-card py-1"
-        >
-          <div className="px-3 py-2 border-b border-border/50">
-            <p className="text-xs font-medium text-foreground truncate">
-              {currentUser.name}
-            </p>
-            <p className="text-[11px] text-muted capitalize">
-              {currentUser.role}
-            </p>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="w-full cursor-pointer flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150"
+      <AnimatePresence>
+        {avatarMenuOpen && currentUser && (
+          <motion.div
+            ref={dropdownRef}
+            initial={{ opacity: 0, scaleY: 0.85 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            exit={{ opacity: 0, scaleY: 0.85, transition: { duration: 0.12, ease: "easeIn" } }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            style={{ transformOrigin: "top" }}
+            className="fixed top-14 right-2.25 z-1001 w-48 rounded-b-lg border border-border bg-card py-1"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+            <div className="px-3 py-2 border-b border-border/50">
+              <p className="text-xs font-medium text-foreground truncate">
+                {currentUser.name}
+              </p>
+              <p className="text-[11px] text-muted capitalize">
+                {currentUser.role}
+              </p>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="w-full cursor-pointer flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150"
             >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Sign out
-          </button>
-        </div>
-      )}
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Sign out
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Users modal — centered overlay */}
-      {panelOpen && (
-        <div
-          className="fixed inset-0 z-1001 flex items-center justify-center"
-          onClick={() => setPanelOpen(false)}
-        >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            aria-hidden="true"
-          />
-          {/* Modal */}
-          <div
-            className="relative z-10 w-full max-w-md mx-4"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {panelOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-1001 flex items-center justify-center"
+            onClick={() => setPanelOpen(false)}
           >
-            <UserList onClose={() => setPanelOpen(false)} />
-          </div>
-        </div>
-      )}
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15, ease: "easeIn" } }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="relative z-10 w-full max-w-md mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <UserList onClose={() => setPanelOpen(false)} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

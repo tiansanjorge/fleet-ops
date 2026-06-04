@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuthStore } from "@/core/auth/authStore";
 import type { User, UserRole } from "@fleetops/types";
 
@@ -22,9 +23,9 @@ const FAKE_USERS: User[] = [
 ];
 
 const roleConfig: Record<UserRole, { label: string; dot: string; accent: string; ring: string }> = {
-  admin:    { label: "Admin",    dot: "bg-red-500",  accent: "text-red-400",  ring: "ring-red-500/40"  },
-  operator: { label: "Operator", dot: "bg-blue-500", accent: "text-blue-400", ring: "ring-blue-500/40" },
-  viewer:   { label: "Viewer",   dot: "bg-zinc-400", accent: "text-zinc-400", ring: "ring-zinc-400/40" },
+  admin:    { label: "Admin",    dot: "bg-red-500",   accent: "text-red-400",  ring: "ring-red-500/40"  },
+  operator: { label: "Operator", dot: "bg-blue-500",  accent: "text-blue-400", ring: "ring-blue-500/40" },
+  viewer:   { label: "Viewer",   dot: "bg-zinc-500",  accent: "text-zinc-400", ring: "ring-zinc-500/40" },
 };
 
 // ---------------------------------------------------------------------------
@@ -76,13 +77,23 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
+        transition={{ duration: 0.15 }}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Panel */}
-      <div className="relative w-full max-w-sm rounded-xl bg-zinc-900/95 border border-zinc-700/60 p-6 shadow-2xl">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15, ease: "easeIn" } }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="relative w-full max-w-sm rounded-xl bg-zinc-900/95 border border-zinc-700/60 p-6 shadow-2xl"
+      >
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
           <p className="text-sm font-medium text-white">Sign in</p>
@@ -185,7 +196,7 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
             </span>
           </button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -205,11 +216,17 @@ export default function LandingPage() {
   const router   = useRouter();
 
   useEffect(() => {
-    if (!IS_MOCK) return;
-    fetch("/users")
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data: User[]) => setUsers(data))
-      .catch(() => {});
+    if (IS_MOCK) {
+      fetch("/users")
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((data: User[]) => setUsers(data))
+        .catch(() => {});
+    } else {
+      fetch(`${API_URL}/auth/demo-users`)
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((data: User[]) => setUsers(data))
+        .catch(() => {});
+    }
   }, []);
 
   function handleSignIn() {
@@ -345,13 +362,15 @@ export default function LandingPage() {
       </div>
 
       {/* Login modal — solo modo real */}
-      {!IS_MOCK && modalOpen && (
-        <LoginModal
-          users={users}
-          onClose={() => setModalOpen(false)}
-          onSuccess={handleModalSuccess}
-        />
-      )}
+      <AnimatePresence>
+        {!IS_MOCK && modalOpen && (
+          <LoginModal
+            users={users}
+            onClose={() => setModalOpen(false)}
+            onSuccess={handleModalSuccess}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
