@@ -38,6 +38,7 @@ fleet-ops/
 - **Fase G** ✅ — JWT auth (POST /auth/login, GET /auth/me, plugin auth.ts, RBAC compartido en @fleetops/types)
 - **Fase H** ✅ — Socket.io + simulación server-side (réplica fiel del frontend mock)
 - **Fase I** ✅ — Adaptador frontend completo. Con `NEXT_PUBLIC_API_MOCK=false` el frontend consume la API real, login JWT real, WebSockets funcionando. CORS configurado. MSW sigue funcionando con `NEXT_PUBLIC_API_MOCK=true`.
+- **Deploy prep** ✅ — `postinstall: prisma generate` en apps/api, `start` sin `--env-file`, `transpilePackages` verificado en next.config.ts, `.env` no trackeado en git.
 
 ---
 
@@ -329,13 +330,37 @@ laurarios@fleetops.com    / password  / rol viewer   (Laura Ríos)
 
 ## Lo que falta
 
-1. **Bugs pendientes** — ver listado detallado abajo
-2. **Deploy** — Vercel (web) + Railway (api + postgres)
-3. **README** — arquitectura y decisiones para el portfolio
+1. **Deploy Render + Neon + Vercel** — pendiente (ver orden de operaciones abajo)
+2. **README** — arquitectura y decisiones para el portfolio
 
-### Bugs conocidos (modo NEXT_PUBLIC_API_MOCK=false)
+### Plan de deploy
 
-- ~~BUG 1~~ ✅ — Vehículo duplicado al crear (REST + socket ambos hacían addVehicle)
-- ~~BUG 2/3~~ ✅ — PUT/DELETE no llegaban al servidor (CORS sin allowedHeaders explícitos)
-- ~~BUG 4~~ ✅ — PATCH /alerts/:id no persistía (solo actualizaba el store local)
-- ~~BUG 5~~ ✅ — Login one-click sin credenciales visibles (reemplazado por modal)
+**Infraestructura decidida:**
+- PostgreSQL: Neon (free tier, no expira)
+- API: Render Web Service (free tier) — `render.yaml` en raíz del repo
+- Frontend: Vercel (free tier) — root directory `apps/web`
+- Anti-sleep: UptimeRobot pingea `GET /health` cada 5 minutos (config manual post-deploy)
+
+**Orden de operaciones:**
+1. Neon: crear proyecto → obtener `DATABASE_URL`
+2. Render: crear Web Service desde repo (`tiansanjorge/fleet-ops`), rama `auth-socket`, usar `render.yaml`
+3. Render: agregar env vars — `DATABASE_URL` (Neon), `JWT_SECRET` (generar con `openssl rand -base64 32`), `CORS_ORIGIN` placeholder
+4. Render: primer deploy → verificar en logs que `prisma generate` corre en postinstall
+5. Render shell: `pnpm --filter @fleetops/api exec prisma migrate deploy`
+6. Render shell: `pnpm --filter @fleetops/api exec prisma db seed`
+7. Render: obtener URL pública del servicio (ej: `https://fleetops-api.onrender.com`)
+8. Vercel: importar repo, root directory `apps/web`, agregar env vars:
+   - `NEXT_PUBLIC_API_MOCK=false`
+   - `NEXT_PUBLIC_API_URL=<URL Render>`
+   - `NEXT_PUBLIC_WS_URL=<URL Render>`
+9. Vercel: obtener URL del frontend (ej: `https://fleet-ops.vercel.app`)
+10. Render: actualizar `CORS_ORIGIN` con URL de Vercel → redeploy automático
+11. UptimeRobot: monitor HTTP para `GET <render-url>/health` cada 5 minutos
+12. Verificación end-to-end: login, mapa, websockets, CRUD, alertas
+
+**Gotchas:**
+- Si Render falla con `PrismaClientInitializationError`: agregar `pnpm --filter @fleetops/api exec prisma generate` al `buildCommand` en `render.yaml`
+- Vercel install command debe correr desde la raíz: configurar como `cd ../.. && pnpm install --frozen-lockfile` o dejar root directory vacío con build command `pnpm --filter @fleetops/web build`
+- Render free tier duerme después de 15 min de inactividad — UptimeRobot lo mitiga
+- Neon pausa la DB después de 5 días sin actividad en free tier — UptimeRobot también resuelve esto
+- El seed hace `deleteMany()` antes de insertar — no correr si hay datos reales
