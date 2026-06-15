@@ -24,11 +24,7 @@ const ALERT_CATALOG: Record<VehicleStatus, AlertTemplate[]> = {
       message: "Sudden swerve detected — possible collision risk",
       severity: "critical",
     },
-    {
-      message: "Collision detected — vehicle unresponsive",
-      severity: "critical",
-      forceStop: true,
-    },
+    { message: "Collision detected — vehicle unresponsive", severity: "critical" },
     // Técnico
     { message: "Engine RPM above normal range", severity: "low" },
     { message: "Tire pressure warning — front left", severity: "medium" },
