@@ -16,13 +16,13 @@ export const db: {
       id: "v2",
       label: "Truck 02",
       position: [-34.619, -58.447], // Caballito
-      status: "idle",
+      status: "moving",
     },
     {
       id: "v3",
       label: "Truck 03",
       position: [-34.589, -58.426], // Palermo
-      status: "stopped",
+      status: "moving",
     },
     {
       id: "v4",
@@ -40,7 +40,7 @@ export const db: {
       id: "v6",
       label: "Truck 06",
       position: [-34.599, -58.502], // Devoto
-      status: "idle",
+      status: "moving",
     },
     {
       id: "v7",
@@ -52,7 +52,7 @@ export const db: {
       id: "v8",
       label: "Truck 08",
       position: [-34.631, -58.462], // Flores
-      status: "stopped",
+      status: "moving",
     },
   ],
   alerts: [],

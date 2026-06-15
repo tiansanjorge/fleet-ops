@@ -10,12 +10,12 @@ const vehicles = [
     lng: -58.43,
     status: VehicleStatus.moving,
   },
-  { label: "Truck 02", lat: -34.619, lng: -58.447, status: VehicleStatus.idle },
+  { label: "Truck 02", lat: -34.619, lng: -58.447, status: VehicleStatus.moving },
   {
     label: "Truck 03",
     lat: -34.589,
     lng: -58.426,
-    status: VehicleStatus.stopped,
+    status: VehicleStatus.moving,
   },
   {
     label: "Truck 04",
@@ -29,7 +29,7 @@ const vehicles = [
     lng: -58.479,
     status: VehicleStatus.moving,
   },
-  { label: "Truck 06", lat: -34.599, lng: -58.502, status: VehicleStatus.idle },
+  { label: "Truck 06", lat: -34.599, lng: -58.502, status: VehicleStatus.moving },
   {
     label: "Truck 07",
     lat: -34.601,
@@ -40,7 +40,7 @@ const vehicles = [
     label: "Truck 08",
     lat: -34.62,
     lng: -58.462,
-    status: VehicleStatus.stopped,
+    status: VehicleStatus.moving,
   },
 ];
 

@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { Alert, Vehicle, VehicleStatus } from "@fleetops/types";
 import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
+import { useToastStore } from "@/shared/ui/toastStore";
 
 // --- Alert catalog: messages keyed by vehicle status ---
 type AlertTemplate = {
   message: string;
   severity: Alert["severity"];
-  forceStop?: boolean;
 };
 
 const ALERT_CATALOG: Record<VehicleStatus, AlertTemplate[]> = {
@@ -68,11 +68,8 @@ function pickTemplate(status: VehicleStatus): AlertTemplate {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// --- Rate control ---
-// ~5% chance per tick → ~1 alert every 20-30s (visible without being noisy)
-const ALERT_CHANCE = 0.05;
-// Minimum ms between any two generated alerts (global cooldown)
-const COOLDOWN_MS = 8_000;
+const ALERT_CHANCE = 1.0;
+const COOLDOWN_MS = 5_000;
 
 let _alertCounter = 0;
 let _lastAlertAt = 0;
@@ -98,7 +95,13 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
   addAlert: (alert) =>
     set((state) => {
       if (state.alerts.some((a) => a.id === alert.id)) return state;
-      return { alerts: [alert, ...state.alerts] };
+      const next = [alert, ...state.alerts];
+      if (next.length <= 10) return { alerts: next };
+      return {
+        alerts: next.map((a, i) =>
+          i >= 10 ? { ...a, dismissed: true, read: true } : a,
+        ),
+      };
     }),
 
   markAsRead: (id) =>
@@ -161,12 +164,17 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
       dismissed: false,
     };
 
-    if (template.forceStop) {
-      useVehicleStore.getState().forceStop(vehicle.id, 60_000);
-    }
-
     _lastAlertAt = now;
-    set((state) => ({ alerts: [alert, ...state.alerts] }));
+    set((state) => {
+      const next = [alert, ...state.alerts];
+      if (next.length <= 10) return { alerts: next };
+      return {
+        alerts: next.map((a, i) =>
+          i >= 10 ? { ...a, dismissed: true, read: true } : a,
+        ),
+      };
+    });
+    useToastStore.getState().addToast(alert.message, alert.severity, vehicle.label);
   },
 
   // Bypasses all rate controls — used for the guaranteed demo alert on load
@@ -187,11 +195,16 @@ export const useAlertStore = create<AlertStore>((set, get) => ({
       dismissed: false,
     };
 
-    if (template.forceStop) {
-      useVehicleStore.getState().forceStop(vehicle.id, 60_000);
-    }
-
     _lastAlertAt = now;
-    set((state) => ({ alerts: [alert, ...state.alerts] }));
+    set((state) => {
+      const next = [alert, ...state.alerts];
+      if (next.length <= 10) return { alerts: next };
+      return {
+        alerts: next.map((a, i) =>
+          i >= 10 ? { ...a, dismissed: true, read: true } : a,
+        ),
+      };
+    });
+    useToastStore.getState().addToast(alert.message, alert.severity, vehicle.label);
   },
 }));

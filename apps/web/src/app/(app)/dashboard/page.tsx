@@ -8,6 +8,8 @@ import AlertList from "@/features/alerts/components/AlertList";
 import { useAlerts } from "@/features/alerts/hooks/useAlerts";
 import { useAlertStore } from "@/features/alerts/store/alertStore";
 import { useAuthStore } from "@/core/auth/authStore";
+import { ToastContainer } from "@/shared/ui/Toast";
+import { InfoBanner } from "@/shared/ui/InfoBanner";
 
 const Map = dynamic(() => import("@/features/vehicles/components/Map"), {
   ssr: false,
@@ -33,8 +35,8 @@ export default function Dashboard() {
 
   return (
     <div className="relative h-full overflow-hidden">
-      {/* Map always fills the full viewport */}
       <Map />
+      <InfoBanner />
 
       {/* Overlay panel — full-screen on mobile, floating panel on desktop */}
       <AnimatePresence>
@@ -51,6 +53,8 @@ export default function Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ToastContainer onOpen={() => setPanelOpen(true)} />
 
       {/* Floating bell button — visible only when panel is closed */}
       {!panelOpen && (

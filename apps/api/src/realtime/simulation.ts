@@ -37,14 +37,12 @@ const STATUS_TRANSITIONS: Record<
 };
 
 // --- Alertas ---
-const ALERT_CHANCE = 0.05; // ~5% por tick
-const COOLDOWN_MS = 8_000; // cooldown global entre alertas
-const FORCE_STOP_MS = 60_000; // una alerta crítica de colisión frena 60s
+const ALERT_CHANCE = 1.0; // garantizado tras el cooldown
+const COOLDOWN_MS = 5_000; // una alerta cada ~5s
 
 type AlertTemplate = {
   message: string;
   severity: AlertSeverity;
-  forceStop?: boolean;
 };
 
 const ALERT_CATALOG: Record<VehicleStatus, AlertTemplate[]> = {
@@ -186,7 +184,6 @@ const ALERT_CATALOG: Record<VehicleStatus, AlertTemplate[]> = {
 
 // --- Estado efímero en memoria (no es parte del dominio) ---
 const headings = new Map<string, number>();
-const forcedStops = new Map<string, number>(); // vehicleId -> expiry ms
 let lastAlertAt = 0;
 
 function getHeading(id: string): number {
@@ -209,13 +206,7 @@ function nextHeading(id: string): number {
   return heading;
 }
 
-function nextStatus(current: VehicleStatus, id: string): VehicleStatus {
-  // Un forceStop activo mantiene el vehículo detenido hasta que expira.
-  const forcedUntil = forcedStops.get(id);
-  if (forcedUntil !== undefined) {
-    if (Date.now() < forcedUntil) return "stopped";
-    forcedStops.delete(id);
-  }
+function nextStatus(current: VehicleStatus): VehicleStatus {
   for (const { next, chance } of STATUS_TRANSITIONS[current]) {
     if (Math.random() < chance) return next;
   }
@@ -255,10 +246,25 @@ async function maybeGenerateAlert(app: FastifyInstance, vehicles: DbVehicle[]) {
     },
   });
 
-  if (template.forceStop) {
-    forcedStops.set(vehicle.id, now + FORCE_STOP_MS);
-  }
   lastAlertAt = now;
+
+  // Sliding window: si hay más de 10 alertas activas, auto-dismiss las más viejas.
+  // Cuando una crítica queda dismissed, ese vehículo vuelve a ser elegible.
+  const activeCount = await app.prisma.alert.count({
+    where: { dismissed: false },
+  });
+  if (activeCount > 10) {
+    const oldest = await app.prisma.alert.findMany({
+      where: { dismissed: false },
+      orderBy: { timestamp: "asc" },
+      take: activeCount - 10,
+      select: { id: true },
+    });
+    await app.prisma.alert.updateMany({
+      where: { id: { in: oldest.map((a) => a.id) } },
+      data: { dismissed: true, read: true },
+    });
+  }
 
   app.io.emit(EVENTS.ALERT_NEW, {
     id: created.id,
@@ -281,7 +287,7 @@ export function startSimulation(app: FastifyInstance): () => void {
       const vehicles = await app.prisma.vehicle.findMany();
 
       for (const v of vehicles) {
-        const status = nextStatus(v.status, v.id);
+        const status = nextStatus(v.status);
 
         if (status === "moving") {
           let heading = nextHeading(v.id);

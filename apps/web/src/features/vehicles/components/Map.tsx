@@ -8,6 +8,7 @@ import L from "leaflet";
 import type { LatLngExpression } from "leaflet";
 import { useVehicles } from "../hooks/useVehicles";
 import { useVehicleStore } from "../store/vehicleStore";
+import { useAlertStore } from "@/features/alerts/store/alertStore";
 import { useShallow } from "zustand/react/shallow";
 import { FLEETOPS_HQ } from "../hooks/useVehicleMutations";
 import VehicleDetailPanel from "./VehicleDetailPanel";
@@ -19,6 +20,12 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   moving: "#22c55e", // green-500
   idle: "#f59e0b", // amber-400
   stopped: "#ef4444", // red-500
+};
+
+const ALERT_COLOR: Record<string, string> = {
+  critical: "#ef4444", // red-500
+  medium: "#f97316",   // orange-500
+  low: "#eab308",      // yellow-500
 };
 
 // Created once — never changes
@@ -34,8 +41,8 @@ function createHQIcon(): L.DivIcon {
   });
 }
 
-function createStatusIcon(status: VehicleStatus, selected = false): L.DivIcon {
-  const color = STATUS_COLOR[status];
+function createStatusIcon(status: VehicleStatus, selected = false, alertColor?: string): L.DivIcon {
+  const color = alertColor ?? STATUS_COLOR.moving; // sin alerta → siempre verde
   const size = selected ? 56 : 48;
   const badgeSize = selected ? 14 : 12;
   const html = `
@@ -71,9 +78,18 @@ const VehicleMarker = memo(function VehicleMarker({
   );
   const selected = useVehicleStore((state) => state.selectedVehicleId === id);
 
+  // Retorna el color de la alerta activa de mayor severidad (string primitivo → no re-renderiza innecesariamente)
+  const alertColor = useAlertStore((state) => {
+    const active = state.alerts.filter((a) => a.vehicleId === id && !a.dismissed);
+    if (active.some((a) => a.severity === "critical")) return ALERT_COLOR.critical;
+    if (active.some((a) => a.severity === "medium")) return ALERT_COLOR.medium;
+    if (active.some((a) => a.severity === "low")) return ALERT_COLOR.low;
+    return undefined;
+  });
+
   const icon = useMemo(
-    () => createStatusIcon(vehicle?.status ?? "stopped", selected),
-    [vehicle?.status, selected],
+    () => createStatusIcon(vehicle?.status ?? "stopped", selected, alertColor),
+    [vehicle?.status, selected, alertColor],
   );
 
   if (!vehicle) return null;

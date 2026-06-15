@@ -1,0 +1,13 @@
+COMANDOS FLEETOPS
+
+docker compose up -d postgres
+
+pnpm dev:api
+
+pnpm dev:web
+
+curl http://localhost:4000/health
+
+docker ps --filter "name=fleetops-postgres"
+
+HACER SWAGGER

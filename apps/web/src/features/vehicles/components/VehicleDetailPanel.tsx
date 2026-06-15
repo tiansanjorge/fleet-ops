@@ -87,7 +87,6 @@ function Panel({ vehicle, onClose }: Props) {
           <Badge variant={vehicle.status} />
 
           <div className="flex flex-col gap-3">
-            <DetailRow label="ID" value={vehicle.id} />
             <DetailRow
               label="Barrio"
               value={

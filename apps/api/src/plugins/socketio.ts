@@ -1,6 +1,7 @@
 import fp from "fastify-plugin";
 import { Server } from "socket.io";
 import { env } from "../config/env.js";
+import { startSimulation } from "../realtime/simulation.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -9,15 +10,10 @@ declare module "fastify" {
 }
 
 export default fp(async (fastify) => {
-  // Socket.io se monta sobre el http.Server de Fastify. Single namespace "/",
-  // sin rooms en MVP.
   const io = new Server(fastify.server, {
     cors: { origin: env.CORS_ORIGIN, credentials: true },
   });
 
-  // Auth en el handshake: el cliente manda el JWT en auth.token. Reusamos el
-  // mismo verificador de @fastify/jwt (registrado por el plugin auth, que va
-  // antes que este).
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token as string | undefined;
     if (!token) return next(new Error("Unauthorized"));
@@ -31,7 +27,27 @@ export default fp(async (fastify) => {
 
   fastify.decorate("io", io);
 
+  // La simulación corre solo mientras haya al menos un cliente conectado.
+  // Así Neon duerme cuando no hay nadie mirando la app.
+  let stopSim: (() => void) | null = null;
+
+  io.on("connection", (socket) => {
+    if (io.sockets.sockets.size === 1 && !stopSim) {
+      fastify.log.info("first client connected — starting simulation");
+      stopSim = startSimulation(fastify);
+    }
+
+    socket.on("disconnect", () => {
+      if (io.sockets.sockets.size === 0 && stopSim) {
+        fastify.log.info("last client disconnected — stopping simulation");
+        stopSim();
+        stopSim = null;
+      }
+    });
+  });
+
   fastify.addHook("onClose", async () => {
+    stopSim?.();
     await io.close();
   });
 });

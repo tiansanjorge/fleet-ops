@@ -2,7 +2,9 @@ import { io, type Socket } from "socket.io-client";
 import { useVehicleStore } from "@/features/vehicles/store/vehicleStore";
 import { useAlertStore } from "@/features/alerts/store/alertStore";
 import { useAuthStore } from "@/core/auth/authStore";
+import { useToastStore } from "@/shared/ui/toastStore";
 import type { Alert, Vehicle } from "@fleetops/types";
+
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:4000";
 
@@ -37,6 +39,8 @@ export function connectSocket(): () => void {
 
     socket.on("alert:new", (alert: Alert) => {
       useAlertStore.getState().addAlert(alert);
+      const vehicle = useVehicleStore.getState().vehicles.find((v) => v.id === alert.vehicleId);
+      useToastStore.getState().addToast(alert.message, alert.severity, vehicle?.label);
     });
   }
 
