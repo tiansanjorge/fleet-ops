@@ -43,6 +43,7 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
   const [password, setPassword] = useState(DEMO_CREDENTIALS.admin.password);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
+  const [slowStart, setSlowStart] = useState(false);
 
   function selectUser(user: User) {
     setSelectedRole(user.role);
@@ -55,6 +56,9 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSlowStart(false);
+    // El backend (Render free tier) puede tardar en despertar de un cold start.
+    const slowTimer = setTimeout(() => setSlowStart(true), 2500);
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -70,6 +74,8 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
     } catch {
       setError("No se pudo conectar con el servidor.");
     } finally {
+      clearTimeout(slowTimer);
+      setSlowStart(false);
       setLoading(false);
     }
   }
@@ -170,6 +176,12 @@ function LoginModal({ users, onClose, onSuccess }: LoginModalProps) {
               required
             />
           </div>
+
+          {slowStart && loading && (
+            <p className="text-xs text-amber-300 bg-amber-500/10 rounded-lg px-3 py-2">
+              El servidor estaba inactivo y se está iniciando — puede demorar hasta un minuto. Gracias por tu paciencia.
+            </p>
+          )}
 
           {error && (
             <p className="text-xs text-red-400 bg-red-500/10 rounded-lg px-3 py-2">
