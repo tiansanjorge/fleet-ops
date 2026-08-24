@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useAlertStore } from "../store/alertStore";
 import type { AlertSeverity } from "@fleetops/types";
 import { usePermission } from "@/core/permissions/usePermission";
@@ -47,6 +48,15 @@ export default function AlertList({ onClose }: AlertListProps) {
   useEffect(() => {
     checkScroll();
   }, [filtered.length, tab, severityFilter, checkScroll]);
+
+  // History puede tener miles de alertas acumuladas — se virtualiza para no
+  // montar un motion.div animado por cada una (eso es lo que colgaba el panel).
+  const virtualizer = useVirtualizer({
+    count: filtered.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 140,
+    overscan: 8,
+  });
 
   return (
     <div className="flex flex-col overflow-hidden rounded-lg bg-card/70 backdrop-blur-md max-h-[calc(100vh-6.5rem)]">
@@ -121,25 +131,59 @@ export default function AlertList({ onClose }: AlertListProps) {
               <div
                 ref={scrollRef}
                 onScroll={checkScroll}
-                className="h-full overflow-y-auto space-y-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-thumb:hover]:bg-zinc-500 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-400"
+                className={`h-full overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-thumb:hover]:bg-zinc-500 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 ${
+                  tab === "active" ? "space-y-2" : ""
+                }`}
               >
-                <AnimatePresence mode="popLayout" initial={true}>
-                  {filtered.map((alert, i) => (
-                    <motion.div
-                      key={alert.id}
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8, transition: { duration: 0.12, ease: "easeIn" } }}
-                      transition={{ duration: 0.2, ease: "easeOut", delay: Math.min(i * 0.04, 0.3) }}
-                      layout
-                    >
-                      <AlertItem
-                        alert={alert}
-                        showDismiss={tab === "active" && can("dismiss:alert")}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                {tab === "active" ? (
+                  <AnimatePresence mode="popLayout" initial={true}>
+                    {filtered.map((alert, i) => (
+                      <motion.div
+                        key={alert.id}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8, transition: { duration: 0.12, ease: "easeIn" } }}
+                        transition={{ duration: 0.2, ease: "easeOut", delay: Math.min(i * 0.04, 0.3) }}
+                        layout
+                      >
+                        <AlertItem
+                          alert={alert}
+                          showDismiss={tab === "active" && can("dismiss:alert")}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                ) : (
+                  // History puede tener miles de alertas: solo se montan las
+                  // filas visibles (+ overscan), el resto vive como espacio reservado.
+                  <div
+                    style={{
+                      height: virtualizer.getTotalSize(),
+                      position: "relative",
+                    }}
+                  >
+                    {virtualizer.getVirtualItems().map((virtualRow) => {
+                      const alert = filtered[virtualRow.index];
+                      return (
+                        <div
+                          key={alert.id}
+                          data-index={virtualRow.index}
+                          ref={virtualizer.measureElement}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            transform: `translateY(${virtualRow.start}px)`,
+                            paddingBottom: 8,
+                          }}
+                        >
+                          <AlertItem alert={alert} showDismiss={false} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
